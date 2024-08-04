@@ -1,5 +1,3 @@
-// script.js
-
 const cells = document.querySelectorAll('.cell');
 let currentPlayer = 'X';
 
@@ -20,6 +18,7 @@ function handleClick(event) {
         cell.textContent = currentPlayer;
         currentPlayer = currentPlayer === 'X' ? 'O' : 'X';
         checkForWin();
+        checkForTie();
     }
 }
 
@@ -29,8 +28,34 @@ function checkForWin() {
         if (cells[a].textContent && cells[a].textContent === cells[b].textContent && cells[a].textContent === cells[c].textContent) {
             // Handle win condition
             console.log(`${currentPlayer} wins!`);
+            disableCells();
+            displayMessage(`${currentPlayer} wins!`);
         }
     });
+}
+
+function checkForTie() {
+    const allCellsFilled = Array.from(cells).every(cell => cell.textContent !== '');
+    if (allCellsFilled) {
+        console.log("It's a tie!");
+        disableCells();
+        displayMessage("It's a tie!");
+    }
+}
+
+function disableCells() {
+    cells.forEach(cell => cell.removeEventListener('click', handleClick));
+}
+
+function displayMessage(message) {
+    const messageElement = document.createElement('div');
+    messageElement.textContent = message;
+    messageElement.style.position = 'absolute';
+    messageElement.style.top = '50%';
+    messageElement.style.left = '50%';
+    messageElement.style.transform = 'translate(-50%, -50%)';
+    messageElement.style.fontSize = '36px';
+    document.body.appendChild(messageElement);
 }
 
 cells.forEach(cell => cell.addEventListener('click', handleClick));
