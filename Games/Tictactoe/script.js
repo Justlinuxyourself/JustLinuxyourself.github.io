@@ -26,7 +26,6 @@ function checkForWin() {
     winningCombinations.forEach(combination => {
         const [a, b, c] = combination;
         if (cells[a].textContent && cells[a].textContent === cells[b].textContent && cells[a].textContent === cells[c].textContent) {
-            // Handle win condition
             console.log(`${currentPlayer} wins!`);
             disableCells();
             displayMessage(`${currentPlayer} wins!`);
@@ -44,7 +43,7 @@ function checkForTie() {
 }
 
 function disableCells() {
-    cells.forEach(cell => cell.removeEventListener('click', handleClick));
+    cells.forEach(cell => cell.removeEventListener('touchstart', handleClick));
 }
 
 function displayMessage(message) {
@@ -58,4 +57,22 @@ function displayMessage(message) {
     document.body.appendChild(messageElement);
 }
 
-cells.forEach(cell => cell.addEventListener('click', handleClick));
+const resetButton = document.getElementById('reset-button');
+
+function resetGame() {
+    currentPlayer = 'X';
+    cells.forEach(cell => {
+        cell.textContent = '';
+        cell.removeEventListener('touchstart', handleClick);
+        cell.addEventListener('touchstart', handleClick);
+    });
+}
+
+resetButton.addEventListener('click', resetGame);
+
+cells.forEach(cell => {
+    cell.addEventListener('touchstart', (event) => {
+        event.preventDefault(); // Prevent scrolling
+        handleClick(event);
+    });
+});
