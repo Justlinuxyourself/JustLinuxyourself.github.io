@@ -25,10 +25,15 @@ function handleClick(event) {
 function checkForWin() {
     winningCombinations.forEach(combination => {
         const [a, b, c] = combination;
-        if (cells[a].textContent && cells[a].textContent === cells[b].textContent && cells[a].textContent === cells[c].textContent) {
-            console.log(`${currentPlayer} wins!`);
+        const cellA = cells[a];
+        const cellB = cells[b];
+        const cellC = cells[c];
+
+        if (cellA.textContent && cellA.textContent === cellB.textContent && cellA.textContent === cellC.textContent) {
+            const winningPlayer = cellA.textContent;
+            console.log(`${winningPlayer} wins!`);
             disableCells();
-            displayMessage(`${currentPlayer} wins!`);
+            displayMessage(`${winningPlayer} wins!`);
         }
     });
 }
