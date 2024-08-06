@@ -1,0 +1,14 @@
+body {
+    background-color: #333;
+    color: white;
+    font-family: Arial, sans-serif;
+}
+
+header {
+    text-align: center;
+}
+
+section {
+    margin-bottom: 20px;
+}
+
