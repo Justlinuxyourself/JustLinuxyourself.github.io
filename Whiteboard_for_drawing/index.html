@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mobile Whiteboard</title>
+  <style>
+    html, body {
+      height: 100%;
+      margin: 0;
+    }
+    canvas {
+      width: 100%;
+      height: 100%;
+    }
+    button {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+    }
+  </style>
+</head>
+<body>
+  <canvas id="myCanvas"></canvas>
+  <input type="color" id="colorPicker" value="#000">
+  <input type="range" min="1" max="10" value="5" id="lineWidthPicker">
+  <button id="eraserButton">Eraser</button>
+
+  <script>
+    const canvas = document.getElementById('myCanvas');
+    const ctx = canvas.getContext('2d');
+    const colorPicker = document.getElementById('colorPicker');
+    const lineWidthPicker = document.getElementById('lineWidthPicker');
+    const eraserButton = document.getElementById('eraserButton');
+
+    let isDrawing = false;
+    let isErasing = false;
+    let x = 0;
+    let y = 0;
+    let currentColor = colorPicker.value;
+    let currentLineWidth = lineWidthPicker.value;
+
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+
+    canvas.addEventListener('touchstart', (event) => {
+      if (event.touches.length === 1) {
+        isDrawing = true;
+        x = event.touches[0].clientX - canvas.offsetLeft;
+        y = event.touches[0].clientY - canvas.offsetTop;
+      } else if (event.touches.length === 2) {
+        // Handle potential zoom or other gestures here
+      }
+    });
+
+    canvas.addEventListener('touchmove', (event) => {
+      if (isDrawing) {
+        if (isErasing) {
+          ctx.strokeStyle = 'white'; // Replace 'white' with your canvas background color
+        } else {
+          ctx.strokeStyle = currentColor;
+        }
+        drawLine(event.touches[0].clientX - canvas.offsetLeft, event.touches[0].clientY - canvas.offsetTop);
+      }
+    });
+
+    canvas.addEventListener('touchend', () => {
+      isDrawing = false;
+      isErasing = false;
+    });
+
+    function drawLine(x1, y1) {
+      ctx.beginPath();
+      ctx.moveTo(x, y);
+      ctx.lineTo(x1, y1);
+      ctx.lineWidth = currentLineWidth;
+      ctx.stroke();
+      x = x1;
+      y = y1;
+    }
+
+    colorPicker.addEventListener('change', (event) => {
+      currentColor = event.target.value;
+    });
+
+    lineWidthPicker.addEventListener('change', (event) => {
+      currentLineWidth = event.target.value;
+    });
+
+    eraserButton.addEventListener('click', () => {
+      isErasing = !isErasing;
+      // You might want to change the button's appearance based on the state
+    });
+  </script>
+</body>
+</html>
