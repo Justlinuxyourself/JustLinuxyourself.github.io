@@ -1,0 +1,7 @@
+{
+  "hello": {
+    "version": "1.0",
+    "filename": "hello.rpm",
+    "description": "Hello World :D"
+  }
+}
