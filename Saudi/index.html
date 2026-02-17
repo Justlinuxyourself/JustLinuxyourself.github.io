@@ -3,63 +3,168 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Saudi Founding Day Celebration</title>
+    <title>Saudi Founding Day - History & Quiz</title>
     <style>
+        :root {
+            --deep-green: #1a4731;
+            --heritage-red: #9c2929;
+            --gold-beige: #a89467;
+            --bg-beige: #f4f1ea;
+        }
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #f4f1ea; /* Light beige background */
+            background-color: var(--bg-beige);
             display: flex;
             justify-content: center;
-            align-items: center;
-            height: 100vh;
+            align-items: flex-start;
+            min-height: 100vh;
             margin: 0;
+            padding: 20px;
         }
-        .founding-card {
+        .container {
             background-color: #ffffff;
-            border: 2px solid #a89467; /* Heritage gold/beige */
+            border: 2px solid var(--gold-beige);
             border-radius: 15px;
-            padding: 40px;
-            text-align: center;
+            padding: 30px;
+            max-width: 700px;
+            width: 100%;
             box-shadow: 0 10px 25px rgba(0,0,0,0.1);
-            max-width: 500px;
-            width: 90%;
         }
-        .header {
-            color: #1a4731; /* Deep green */
-            font-size: 2em;
-            margin-bottom: 10px;
-            font-weight: bold;
+        .header-box { text-align: center; margin-bottom: 30px; }
+        .header { color: var(--deep-green); font-size: 2.2em; font-weight: bold; margin: 0; }
+        .sub-header { color: var(--heritage-red); font-size: 1.1em; letter-spacing: 1px; }
+
+        /* History Section */
+        .history-box {
+            background: #fcfbf7;
+            border-left: 5px solid var(--deep-green);
+            padding: 20px;
+            margin-bottom: 30px;
         }
-        .sub-header {
-            color: #9c2929; /* Deep red */
-            font-size: 1.2em;
-            margin-bottom: 20px;
+        .history-box h3 { color: var(--deep-green); margin-top: 0; }
+        .history-box p { line-height: 1.6; color: #444; }
+
+        /* Quiz Section */
+        .quiz-box {
+            border-top: 2px dashed var(--gold-beige);
+            padding-top: 20px;
         }
-        .content {
-            color: #333;
-            line-height: 1.6;
-            font-size: 1.1em;
+        .question { font-weight: bold; margin-bottom: 15px; color: #333; }
+        .options { display: grid; gap: 10px; }
+        .option-btn {
+            padding: 12px;
+            background: #fff;
+            border: 1px solid var(--gold-beige);
+            border-radius: 8px;
+            cursor: pointer;
+            transition: 0.3s;
+            text-align: left;
         }
-        .footer {
-            margin-top: 30px;
-            font-weight: bold;
-            color: #a89467;
-        }
-        .highlight {
-            color: #1a4731;
-            font-weight: bold;
+        .option-btn:hover { background: #fdfaf0; border-color: var(--deep-green); }
+        .correct { background-color: #d4edda !important; border-color: #28a745 !important; }
+        .wrong { background-color: #f8d7da !important; border-color: #dc3545 !important; }
+        
+        #result-msg { margin-top: 15px; font-weight: bold; text-align: center; min-height: 24px; }
+        .next-btn {
+            margin-top: 20px;
+            padding: 10px 25px;
+            background: var(--deep-green);
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            display: none;
         }
     </style>
 </head>
 <body>
-    <div class="founding-card">
-        <div class="header">٣ شـرورف مـن الـعـزة</div>
-        <div class="sub-header">Saudi Founding Day - Feb 22</div>
-        <div class="content">
-            <p>Celebrating <span class="highlight">3 Centuries</span> of pride, unity, and heritage.</p>
-            <p>Commemorating the establishment of the First Saudi State in 1727.</p>
-        </div>
-        <div class="footer">#FoundingDay | يوم_التأسيس#</div>
+
+<div class="container">
+    <div class="header-box">
+        <h1 class="header">يوم التأسيس</h1>
+        <div class="sub-header">SAUDI FOUNDING DAY - 1727</div>
     </div>
+
+    <div class="history-box">
+        <h3>Historical Roots</h3>
+        <p>Founding Day honors the establishment of the <strong>First Saudi State</strong> in <strong>1727</strong> by <strong>Imam Muhammad bin Saud</strong>. Unlike National Day, which celebrates the 1932 unification, this day recognizes the 300-year-old political foundation laid in <strong>Diriyah</strong>.</p>
+    </div>
+
+    <div class="quiz-box" id="quiz-container">
+        <div class="question" id="question-text">Loading question...</div>
+        <div class="options" id="options-container"></div>
+        <div id="result-msg"></div>
+        <button class="next-btn" id="next-btn" onclick="loadNextQuestion()">Next Question</button>
+    </div>
+</div>
+
+<script>
+    const quizData = [
+        {
+            q: "In which year was the First Saudi State founded?",
+            options: ["1932", "1727", "1818", "1902"],
+            correct: 1
+        },
+        {
+            q: "Who is the founder of the First Saudi State?",
+            options: ["King Abdulaziz", "Imam Turki bin Abdullah", "Imam Muhammad bin Saud", "King Salman"],
+            correct: 2
+        },
+        {
+            q: "What was the first capital of the Saudi State?",
+            options: ["Riyadh", "Jeddah", "Diriyah", "Dammam"],
+            correct: 2
+        }
+    ];
+
+    let currentIdx = 0;
+
+    function loadQuestion() {
+        const qData = quizData[currentIdx];
+        document.getElementById('question-text').innerText = `Q${currentIdx + 1}: ${qData.q}`;
+        const optionsCont = document.getElementById('options-container');
+        optionsCont.innerHTML = '';
+        document.getElementById('result-msg').innerText = '';
+        document.getElementById('next-btn').style.display = 'none';
+
+        qData.options.forEach((opt, i) => {
+            const btn = document.createElement('button');
+            btn.className = 'option-btn';
+            btn.innerText = opt;
+            btn.onclick = () => checkAnswer(i, btn);
+            optionsCont.appendChild(btn);
+        });
+    }
+
+    function checkAnswer(selected, btn) {
+        const correctIdx = quizData[currentIdx].correct;
+        const allBtns = document.querySelectorAll('.option-btn');
+        allBtns.forEach(b => b.disabled = true);
+
+        if (selected === correctIdx) {
+            btn.classList.add('correct');
+            document.getElementById('result-msg').innerText = "Correct! 🇸🇦";
+            document.getElementById('result-msg').style.color = "#28a745";
+        } else {
+            btn.classList.add('wrong');
+            allBtns[correctIdx].classList.add('correct');
+            document.getElementById('result-msg').innerText = "Incorrect. Try again in the next one!";
+            document.getElementById('result-msg').style.color = "#dc3545";
+        }
+        document.getElementById('next-btn').style.display = 'block';
+    }
+
+    function loadNextQuestion() {
+        currentIdx++;
+        if (currentIdx < quizData.length) {
+            loadQuestion();
+        } else {
+            document.getElementById('quiz-container').innerHTML = `<h3>Quiz Completed!</h3><p>You've learned the essentials of Saudi Founding Day.</p><button class="next-btn" style="display:block" onclick="location.reload()">Restart Quiz</button>`;
+        }
+    }
+
+    loadQuestion();
+</script>
+
 </body>
 </html>
