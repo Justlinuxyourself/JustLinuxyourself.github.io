@@ -1,15 +1,15 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Saudi Founding Day - History & Quiz</title>
+    <title>يوم التأسيس السعودي - تاريخ ومسابقات</title>
     <style>
         :root {
-            --deep-green: #1a4731;
-            --heritage-red: #9c2929;
-            --gold-beige: #a89467;
-            --bg-beige: #f4f1ea;
+            --deep-green: #1a4731; /* أخضر ملكي */
+            --heritage-red: #9c2929; /* أحمر تراثي */
+            --gold-beige: #a89467; /* لون الرمال والذهب */
+            --bg-beige: #f4f1ea; /* خلفية فاتحة */
         }
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -24,56 +24,58 @@
         .container {
             background-color: #ffffff;
             border: 2px solid var(--gold-beige);
-            border-radius: 15px;
+            border-radius: 20px;
             padding: 30px;
             max-width: 700px;
             width: 100%;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            box-shadow: 0 15px 35px rgba(0,0,0,0.1);
         }
         .header-box { text-align: center; margin-bottom: 30px; }
-        .header { color: var(--deep-green); font-size: 2.2em; font-weight: bold; margin: 0; }
-        .sub-header { color: var(--heritage-red); font-size: 1.1em; letter-spacing: 1px; }
+        .header { color: var(--deep-green); font-size: 2.8em; font-weight: bold; margin: 0; }
+        .sub-header { color: var(--heritage-red); font-size: 1.3em; margin-top: 5px; }
 
-        /* History Section */
+        /* قسم التاريخ */
         .history-box {
             background: #fcfbf7;
-            border-left: 5px solid var(--deep-green);
-            padding: 20px;
+            border-right: 5px solid var(--deep-green); /* خط جانبي لليمين */
+            padding: 25px;
             margin-bottom: 30px;
         }
-        .history-box h3 { color: var(--deep-green); margin-top: 0; }
-        .history-box p { line-height: 1.6; color: #444; }
+        .history-box h3 { color: var(--deep-green); margin-top: 0; font-size: 1.5em; }
+        .history-box p { line-height: 1.8; color: #444; font-size: 1.1em; }
 
-        /* Quiz Section */
+        /* قسم الاختبار */
         .quiz-box {
             border-top: 2px dashed var(--gold-beige);
             padding-top: 20px;
         }
-        .question { font-weight: bold; margin-bottom: 15px; color: #333; }
-        .options { display: grid; gap: 10px; }
+        .question { font-weight: bold; font-size: 1.2em; margin-bottom: 20px; color: #333; }
+        .options { display: grid; gap: 12px; }
         .option-btn {
-            padding: 12px;
+            padding: 15px;
             background: #fff;
             border: 1px solid var(--gold-beige);
-            border-radius: 8px;
+            border-radius: 10px;
             cursor: pointer;
             transition: 0.3s;
-            text-align: left;
+            text-align: right;
+            font-size: 1.05em;
         }
         .option-btn:hover { background: #fdfaf0; border-color: var(--deep-green); }
-        .correct { background-color: #d4edda !important; border-color: #28a745 !important; }
-        .wrong { background-color: #f8d7da !important; border-color: #dc3545 !important; }
+        .correct { background-color: #d4edda !important; border-color: #28a745 !important; color: #155724; }
+        .wrong { background-color: #f8d7da !important; border-color: #dc3545 !important; color: #721c24; }
         
-        #result-msg { margin-top: 15px; font-weight: bold; text-align: center; min-height: 24px; }
+        #result-msg { margin-top: 20px; font-weight: bold; text-align: center; font-size: 1.2em; min-height: 30px; }
         .next-btn {
-            margin-top: 20px;
-            padding: 10px 25px;
+            margin: 20px auto 0;
+            padding: 12px 40px;
             background: var(--deep-green);
             color: white;
             border: none;
-            border-radius: 5px;
+            border-radius: 8px;
             cursor: pointer;
             display: none;
+            font-size: 1.1em;
         }
     </style>
 </head>
@@ -82,37 +84,37 @@
 <div class="container">
     <div class="header-box">
         <h1 class="header">يوم التأسيس</h1>
-        <div class="sub-header">SAUDI FOUNDING DAY - 1727</div>
+        <div class="sub-header">يوم بدينا - ١١٣٩هـ / ١٧٢٧م</div>
     </div>
 
     <div class="history-box">
-        <h3>Historical Roots</h3>
-        <p>Founding Day honors the establishment of the <strong>First Saudi State</strong> in <strong>1727</strong> by <strong>Imam Muhammad bin Saud</strong>. Unlike National Day, which celebrates the 1932 unification, this day recognizes the 300-year-old political foundation laid in <strong>Diriyah</strong>.</p>
+        <h3>جذورنا التاريخية</h3>
+        <p>نحتفي في <strong>٢٢ فبراير</strong> من كل عام بتأسيس <strong>الدولة السعودية الأولى</strong> على يد <strong>الإمام محمد بن سعود</strong> في عام <strong>١٧٢٧م</strong>. اتخذ الإمام من <strong>الدرعية</strong> عاصمة للدولة، لتبدأ من هناك قصة وحدة واستقرار استمرت لأكثر من ثلاثة قرون.</p>
     </div>
 
     <div class="quiz-box" id="quiz-container">
-        <div class="question" id="question-text">Loading question...</div>
+        <div class="question" id="question-text">جاري تحميل السؤال...</div>
         <div class="options" id="options-container"></div>
         <div id="result-msg"></div>
-        <button class="next-btn" id="next-btn" onclick="loadNextQuestion()">Next Question</button>
+        <button class="next-btn" id="next-btn" onclick="loadNextQuestion()">السؤال التالي</button>
     </div>
 </div>
 
 <script>
     const quizData = [
         {
-            q: "In which year was the First Saudi State founded?",
-            options: ["1932", "1727", "1818", "1902"],
+            q: "في أي عام تأسست الدولة السعودية الأولى؟",
+            options: ["١٩٣٢م", "١٧٢٧م", "١٨١٨م", "١٩٠٢م"],
             correct: 1
         },
         {
-            q: "Who is the founder of the First Saudi State?",
-            options: ["King Abdulaziz", "Imam Turki bin Abdullah", "Imam Muhammad bin Saud", "King Salman"],
+            q: "من هو مؤسس الدولة السعودية الأولى؟",
+            options: ["الملك عبدالعزيز", "الإمام تركي بن عبدالله", "الإمام محمد بن سعود", "الملك سلمان"],
             correct: 2
         },
         {
-            q: "What was the first capital of the Saudi State?",
-            options: ["Riyadh", "Jeddah", "Diriyah", "Dammam"],
+            q: "ما هي العاصمة الأولى للدولة السعودية؟",
+            options: ["الرياض", "جدة", "الدرعية", "الدمام"],
             correct: 2
         }
     ];
@@ -121,7 +123,7 @@
 
     function loadQuestion() {
         const qData = quizData[currentIdx];
-        document.getElementById('question-text').innerText = `Q${currentIdx + 1}: ${qData.q}`;
+        document.getElementById('question-text').innerText = `س${currentIdx + 1}: ${qData.q}`;
         const optionsCont = document.getElementById('options-container');
         optionsCont.innerHTML = '';
         document.getElementById('result-msg').innerText = '';
@@ -143,12 +145,12 @@
 
         if (selected === correctIdx) {
             btn.classList.add('correct');
-            document.getElementById('result-msg').innerText = "Correct! 🇸🇦";
+            document.getElementById('result-msg').innerText = "إجابة صحيحة! 🇸🇦";
             document.getElementById('result-msg').style.color = "#28a745";
         } else {
             btn.classList.add('wrong');
             allBtns[correctIdx].classList.add('correct');
-            document.getElementById('result-msg').innerText = "Incorrect. Try again in the next one!";
+            document.getElementById('result-msg').innerText = "للأسف، إجابة خاطئة.";
             document.getElementById('result-msg').style.color = "#dc3545";
         }
         document.getElementById('next-btn').style.display = 'block';
@@ -159,7 +161,11 @@
         if (currentIdx < quizData.length) {
             loadQuestion();
         } else {
-            document.getElementById('quiz-container').innerHTML = `<h3>Quiz Completed!</h3><p>You've learned the essentials of Saudi Founding Day.</p><button class="next-btn" style="display:block" onclick="location.reload()">Restart Quiz</button>`;
+            document.getElementById('quiz-container').innerHTML = `
+                <h3 style="text-align:center; color:var(--deep-green)">اكتمل الاختبار!</h3>
+                <p style="text-align:center">لقد تعرفت على أهم محطات تاريخنا العريق.</p>
+                <button class="next-btn" style="display:block" onclick="location.reload()">إعادة الاختبار</button>
+            `;
         }
     }
 
