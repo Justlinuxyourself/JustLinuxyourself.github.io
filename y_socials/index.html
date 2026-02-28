@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Socials | Connect</title>
+    
+    <style>
+        /* CSS EMBEDDED DIRECTLY */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', -apple-system, system-ui, sans-serif;
+        }
+
+        body {
+            background-color: #050505;
+            color: white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+            overflow-x: hidden;
+        }
+
+        /* Subtle Background Glow */
+        body::before {
+            content: "";
+            position: absolute;
+            width: 300px;
+            height: 300px;
+            background: rgba(110, 69, 226, 0.15);
+            filter: blur(100px);
+            top: 10%;
+            left: 10%;
+            z-index: -1;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 400px;
+            text-align: center;
+        }
+
+        .profile {
+            margin-bottom: 35px;
+        }
+
+        .avatar {
+            width: 90px;
+            height: 90px;
+            background: linear-gradient(45deg, #6e45e2, #24d292);
+            border-radius: 50%;
+            margin: 0 auto 15px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 2.5rem;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
+
+        h1 { font-size: 1.8rem; letter-spacing: -1px; }
+        .sub { color: #888; margin-top: 5px; font-size: 0.9rem; }
+
+        .links-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .link-card {
+            background: #111;
+            border: 1px solid #222;
+            padding: 16px 20px;
+            border-radius: 16px;
+            text-decoration: none;
+            color: white;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .link-card:hover {
+            transform: translateY(-3px);
+            background: #1a1a1a;
+            border-color: #6e45e2;
+        }
+
+        .platform { font-weight: 600; font-size: 1.05rem; }
+        .handle { color: #6e45e2; font-size: 0.9rem; font-weight: 500; }
+
+        .note {
+            margin-top: 20px;
+            font-size: 0.75rem;
+            color: #444;
+            font-style: italic;
+        }
+
+        /* Special highlights */
+        .link-card:hover .handle { color: #fff; }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <div class="profile">
+            <div class="avatar">👤</div>
+            <h1>Socials</h1>
+            <p class="sub">Tap to visit or copy handle</p>
+        </div>
+
+        <div class="links-grid">
+            <a href="https://www.roblox.com/users/search?keyword=z6enly" target="_blank" class="link-card">
+                <span class="platform">Roblox</span>
+                <span class="handle">z6enly</span>
+            </a>
+
+            <a href="https://www.tiktok.com/@3ledory" target="_blank" class="link-card">
+                <span class="platform">TikTok</span>
+                <span class="handle">3ledory</span>
+            </a>
+
+            <div class="link-card" onclick="alert('Discord Handle: h8za')">
+                <span class="platform">Discord</span>
+                <span class="handle">h8za</span>
+            </div>
+
+            <a href="https://www.instagram.com/crycvlt" target="_blank" class="link-card">
+                <span class="platform">Instagram</span>
+                <span class="handle">crycvlt</span>
+            </a>
+
+            <a href="https://www.twitch.tv/z6enly" target="_blank" class="link-card">
+                <span class="platform">Twitch</span>
+                <span class="handle">z6enly</span>
+            </a>
+
+            <div class="link-card" onclick="alert('Snapchat: imtoo_prxtty (Don\'t ask, my sister made it)')">
+                <span class="platform">Snapchat</span>
+                <span class="handle">imtoo_prxtty</span>
+            </div>
+        </div>
+
+        <p class="note">imtoo_prxtty: my sister made that one lol</p>
+    </div>
+
+</body>
+</html>
