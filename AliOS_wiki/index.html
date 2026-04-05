@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AliOS 4 Engineering Bible</title>
+    <style>
+        :root {
+            --bg-blue: #0000AA;
+            --text-yellow: #FFFF55;
+            --sidebar-blue: #000066;
+            --border-white: #FFFFFF;
+        }
+
+        body {
+            background-color: var(--bg-blue);
+            color: var(--text-yellow);
+            font-family: 'Courier New', Courier, monospace;
+            margin: 0;
+            display: flex;
+        }
+
+        /* Sidebar Navigation */
+        nav {
+            width: 250px;
+            background-color: var(--sidebar-blue);
+            height: 100vh;
+            position: fixed;
+            border-right: 2px solid var(--text-yellow);
+            padding: 20px;
+            overflow-y: auto;
+        }
+
+        nav h2 { color: #FFF; font-size: 1.2rem; border-bottom: 1px solid var(--text-yellow); }
+
+        nav ul { list-style: none; padding: 0; }
+        nav ul li { margin: 15px 0; }
+        nav ul li a {
+            color: var(--text-yellow);
+            text-decoration: none;
+            font-weight: bold;
+        }
+        nav ul li a:hover { color: #FFF; text-decoration: underline; }
+
+        /* Main Content Area */
+        main {
+            margin-left: 290px;
+            padding: 40px;
+            max-width: 900px;
+        }
+
+        .infobox {
+            float: right;
+            width: 300px;
+            border: 2px solid var(--text-yellow);
+            background: var(--sidebar-blue);
+            margin-left: 20px;
+            padding: 10px;
+        }
+
+        .infobox table { width: 100%; border-collapse: collapse; }
+        .infobox th { text-align: left; color: #FFF; padding: 5px; border-bottom: 1px solid var(--text-yellow); }
+        .infobox td { padding: 5px; }
+
+        h1, h2, h3 { color: #FFF; border-bottom: 1px solid var(--text-yellow); padding-bottom: 5px; }
+        
+        .wikitable {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            border: 1px solid var(--text-yellow);
+        }
+        .wikitable th, .wikitable td {
+            border: 1px solid var(--text-yellow);
+            padding: 10px;
+            text-align: left;
+        }
+
+        code, pre {
+            background-color: #000;
+            color: #0F0; /* Terminal Green for code */
+            padding: 15px;
+            display: block;
+            border: 1px dashed var(--text-yellow);
+            overflow-x: auto;
+        }
+
+        .stutter-box {
+            background: #440000;
+            border: 2px solid red;
+            padding: 15px;
+            color: #FFF;
+        }
+    </style>
+</head>
+<body>
+
+<nav>
+    <h2>AliOS 4 Wiki</h2>
+    <ul>
+        <li><a href="#main">Main Page</a></li>
+        <li><a href="#pc-speaker">PC Speaker Driver</a></li>
+        <li><a href="#vga-notebook">VGA Notebook UI</a></li>
+        <li><a href="#">GDT Setup (TBA)</a></li>
+        <li><a href="#">Kernel Entry (TBA)</a></li>
+    </ul>
+</nav>
+
+<main>
+    <!-- MAIN PAGE SECTION -->
+    <section id="main">
+        <div class="infobox">
+            <table>
+                <tr><th colspan="2" style="text-align:center;">AliOS 4: Notebook Edition</th></tr>
+                <tr><td><strong>Developer</strong></td><td>Ali</td></tr>
+                <tr><td><strong>Architecture</strong></td><td>x86-64 (Long Mode)</td></tr>
+                <tr><td><strong>Bootloader</strong></td><td>GRUB (Multiboot2)</td></tr>
+                <tr><td><strong>Interface</strong></td><td>VGA 0x1E</td></tr>
+                <tr><td><strong>Audio</strong></td><td>PC Speaker</td></tr>
+            </table>
+        </div>
+
+        <h1>Introduction</h1>
+        <p><strong>AliOS 4</strong> is a custom-built, 64-bit operating system designed for the "Notebook" computing philosophy. It focuses on high-contrast readability and low-level hardware control. This wiki serves as the primary <strong>Engineering Bible</strong> for the kernel's development.</p>
+
+        <h2>System Directory</h2>
+        <ul>
+            <li><a href="#vga-notebook">Drivers:VGA_Notebook</a> — The Blue/Yellow color theory.</li>
+            <li><a href="#pc-speaker">Drivers:PC_Speaker</a> — Audio logic and stuttering analysis.</li>
+        </ul>
+
+        <h2>Project Status</h2>
+        <ul>
+            <li><strong>Current Build:</strong> 0.4.1-Alpha</li>
+            <li><strong>Stable Features:</strong> VGA Rendering, GDT Loading.</li>
+        </ul>
+    </section>
+
+    <hr style="margin: 50px 0; border: 1px solid var(--text-yellow);">
+
+    <!-- PC SPEAKER SECTION -->
+    <section id="pc-speaker">
+        <h1>PC Speaker Implementation</h1>
+        <p>The audio system in AliOS 4 utilizes the legacy <strong>Intel 8253/8254 Programmable Interval Timer (PIT)</strong>.</p>
+
+        <h3>Hardware Logic</h3>
+        <p>The speaker is connected to <strong>Timer Channel 2</strong>. The kernel communicates with I/O ports <code>0x43</code> (Command) and <code>0x42</code> (Data).</p>
+
+        <h3>Frequency Calculation</h3>
+        <p style="background: #000; padding: 10px; text-align: center; border: 1px solid var(--text-yellow);">
+            Divisor = 1193182 / Target Frequency (Hz)
+        </p>
+
+        <div class="stutter-box">
+            <h3>The "Stutter" Bug (Technical Analysis)</h3>
+            <p>Audio experiences intermittent stuttering. Likely due to Lack of IRQ Timing or VGA interference during 64-bit context switching.</p>
+        </div>
+    </section>
+
+    <hr style="margin: 50px 0; border: 1px solid var(--text-yellow);">
+
+    <!-- VGA SECTION -->
+    <section id="vga-notebook">
+        <h1>VGA Notebook Interface</h1>
+        <p>Each character is represented by 16 bits. AliOS 4 uses the <strong>0x1E</strong> attribute byte.</p>
+
+        <table class="wikitable">
+            <tr><th>Bit</th><th>Value</th><th>Meaning</th></tr>
+            <tr><td>0-3</td><td>1110 (0xE)</td><td>Yellow Foreground</td></tr>
+            <tr><td>4-6</td><td>001 (0x1)</td><td>Blue Background</td></tr>
+        </table>
+
+        <h2>Implementation in C</h2>
+<pre>
+void clear_screen() {
+    char* vga = (char*)0xB8000;
+    for (int i = 0; i < 80 * 25 * 2; i += 2) {
+        vga[i] = ' ';         // Space
+        vga[i+1] = 0x1E;      // Blue BG, Yellow FG
+    }
+}
+</pre>
+    </section>
+</main>
+
+</body>
+</html>
