@@ -9,7 +9,7 @@
             --bg-blue: #0000AA;
             --text-yellow: #FFFF55;
             --sidebar-blue: #000066;
-            --border-white: #FFFFFF;
+            --code-bg: #000000;
         }
 
         body {
@@ -32,22 +32,13 @@
         }
 
         nav h2 { color: #FFF; font-size: 1.2rem; border-bottom: 1px solid var(--text-yellow); }
-
         nav ul { list-style: none; padding: 0; }
         nav ul li { margin: 15px 0; }
-        nav ul li a {
-            color: var(--text-yellow);
-            text-decoration: none;
-            font-weight: bold;
-        }
+        nav ul li a { color: var(--text-yellow); text-decoration: none; font-weight: bold; }
         nav ul li a:hover { color: #FFF; text-decoration: underline; }
 
-        /* Main Content Area */
-        main {
-            margin-left: 290px;
-            padding: 40px;
-            max-width: 900px;
-        }
+        /* Main Content */
+        main { margin-left: 290px; padding: 40px; max-width: 1000px; }
 
         .infobox {
             float: right;
@@ -58,38 +49,27 @@
             padding: 10px;
         }
 
-        .infobox table { width: 100%; border-collapse: collapse; }
-        .infobox th { text-align: left; color: #FFF; padding: 5px; border-bottom: 1px solid var(--text-yellow); }
-        .infobox td { padding: 5px; }
-
         h1, h2, h3 { color: #FFF; border-bottom: 1px solid var(--text-yellow); padding-bottom: 5px; }
         
-        .wikitable {
-            width: 100%;
-            border-collapse: collapse;
-            margin: 20px 0;
-            border: 1px solid var(--text-yellow);
-        }
-        .wikitable th, .wikitable td {
-            border: 1px solid var(--text-yellow);
-            padding: 10px;
-            text-align: left;
-        }
-
         code, pre {
-            background-color: #000;
-            color: #0F0; /* Terminal Green for code */
+            background-color: var(--code-bg);
+            color: #00FF00; /* Classic Green terminal text */
             padding: 15px;
             display: block;
             border: 1px dashed var(--text-yellow);
             overflow-x: auto;
+            line-height: 1.4;
         }
 
-        .stutter-box {
-            background: #440000;
-            border: 2px solid red;
-            padding: 15px;
-            color: #FFF;
+        .comment { color: #888; font-style: italic; }
+        .keyword { color: #ff79c6; }
+        .address { color: #bd93f9; }
+
+        .note {
+            background: #222;
+            border-left: 5px solid var(--text-yellow);
+            padding: 10px;
+            margin: 20px 0;
         }
     </style>
 </head>
@@ -99,88 +79,102 @@
     <h2>AliOS 4 Wiki</h2>
     <ul>
         <li><a href="#main">Main Page</a></li>
+        <li><a href="#kernel-entry">Kernel Entry (_start)</a></li>
+        <li><a href="#gdt-setup">GDT & Segments</a></li>
         <li><a href="#pc-speaker">PC Speaker Driver</a></li>
         <li><a href="#vga-notebook">VGA Notebook UI</a></li>
-        <li><a href="#">GDT Setup (TBA)</a></li>
-        <li><a href="#">Kernel Entry (TBA)</a></li>
     </ul>
 </nav>
 
 <main>
-    <!-- MAIN PAGE SECTION -->
+    <!-- MAIN PAGE -->
     <section id="main">
         <div class="infobox">
-            <table>
-                <tr><th colspan="2" style="text-align:center;">AliOS 4: Notebook Edition</th></tr>
-                <tr><td><strong>Developer</strong></td><td>Ali</td></tr>
-                <tr><td><strong>Architecture</strong></td><td>x86-64 (Long Mode)</td></tr>
-                <tr><td><strong>Bootloader</strong></td><td>GRUB (Multiboot2)</td></tr>
-                <tr><td><strong>Interface</strong></td><td>VGA 0x1E</td></tr>
-                <tr><td><strong>Audio</strong></td><td>PC Speaker</td></tr>
-            </table>
+            <h3 style="text-align:center; margin-top:0;">AliOS 4 Specs</h3>
+            <p><strong>Arch:</strong> x86-64</p>
+            <p><strong>Mode:</strong> Long Mode</p>
+            <p><strong>Colors:</strong> 0x1E</p>
         </div>
-
-        <h1>Introduction</h1>
-        <p><strong>AliOS 4</strong> is a custom-built, 64-bit operating system designed for the "Notebook" computing philosophy. It focuses on high-contrast readability and low-level hardware control. This wiki serves as the primary <strong>Engineering Bible</strong> for the kernel's development.</p>
-
-        <h2>System Directory</h2>
-        <ul>
-            <li><a href="#vga-notebook">Drivers:VGA_Notebook</a> — The Blue/Yellow color theory.</li>
-            <li><a href="#pc-speaker">Drivers:PC_Speaker</a> — Audio logic and stuttering analysis.</li>
-        </ul>
-
-        <h2>Project Status</h2>
-        <ul>
-            <li><strong>Current Build:</strong> 0.4.1-Alpha</li>
-            <li><strong>Stable Features:</strong> VGA Rendering, GDT Loading.</li>
-        </ul>
-    </section>
-
-    <hr style="margin: 50px 0; border: 1px solid var(--text-yellow);">
-
-    <!-- PC SPEAKER SECTION -->
-    <section id="pc-speaker">
-        <h1>PC Speaker Implementation</h1>
-        <p>The audio system in AliOS 4 utilizes the legacy <strong>Intel 8253/8254 Programmable Interval Timer (PIT)</strong>.</p>
-
-        <h3>Hardware Logic</h3>
-        <p>The speaker is connected to <strong>Timer Channel 2</strong>. The kernel communicates with I/O ports <code>0x43</code> (Command) and <code>0x42</code> (Data).</p>
-
-        <h3>Frequency Calculation</h3>
-        <p style="background: #000; padding: 10px; text-align: center; border: 1px solid var(--text-yellow);">
-            Divisor = 1193182 / Target Frequency (Hz)
-        </p>
-
-        <div class="stutter-box">
-            <h3>The "Stutter" Bug (Technical Analysis)</h3>
-            <p>Audio experiences intermittent stuttering. Likely due to Lack of IRQ Timing or VGA interference during 64-bit context switching.</p>
+        <h1>AliOS 4: Main Page</h1>
+        <p>This Engineering Bible documents the transition of AliOS 4 into a 64-bit environment. It is the primary reference for the <strong>Notebook UI</strong> and hardware integration.</p>
+        
+        <div class="note">
+            <strong>Current Goal:</strong> Reach 60 pages of technical specifications for project validation.
         </div>
     </section>
 
-    <hr style="margin: 50px 0; border: 1px solid var(--text-yellow);">
+    <hr style="margin: 60px 0; border: 0; border-top: 2px dashed #FFF;">
 
-    <!-- VGA SECTION -->
-    <section id="vga-notebook">
-        <h1>VGA Notebook Interface</h1>
-        <p>Each character is represented by 16 bits. AliOS 4 uses the <strong>0x1E</strong> attribute byte.</p>
+    <!-- KERNEL ENTRY SECTION -->
+    <section id="kernel-entry">
+        <h1>Kernel Entry Point (_start)</h1>
+        <p>When GRUB loads AliOS 4, it follows the <strong>Multiboot2</strong> protocol. The entry point is defined in assembly to bridge the gap between the bootloader and C code.</p>
 
-        <table class="wikitable">
-            <tr><th>Bit</th><th>Value</th><th>Meaning</th></tr>
-            <tr><td>0-3</td><td>1110 (0xE)</td><td>Yellow Foreground</td></tr>
-            <tr><td>4-6</td><td>001 (0x1)</td><td>Blue Background</td></tr>
-        </table>
-
-        <h2>Implementation in C</h2>
+        <h3>Assembly Header (boot.S)</h3>
 <pre>
-void clear_screen() {
-    char* vga = (char*)0xB8000;
-    for (int i = 0; i < 80 * 25 * 2; i += 2) {
-        vga[i] = ' ';         // Space
-        vga[i+1] = 0x1E;      // Blue BG, Yellow FG
-    }
-}
+<span class="keyword">section</span> .text
+<span class="keyword">bits</span> 32 <span class="comment">; GRUB starts us in 32-bit Protected Mode</span>
+
+<span class="keyword">global</span> _start
+<span class="keyword">_start:</span>
+    <span class="keyword">cli</span>             <span class="comment">; Disable interrupts</span>
+    <span class="keyword">mov</span> esp, stack_top <span class="comment">; Setup stack</span>
+
+    <span class="comment">; Hand over to Long Mode Setup</span>
+    <span class="keyword">call</span> check_multiboot
+    <span class="keyword">call</span> setup_paging
+    <span class="keyword">call</span> load_gdt
+    
+    <span class="keyword">jmp</span> gdt64.code:long_mode_start
 </pre>
+        <p>This code ensures the CPU is prepared for 64-bit instructions before jumping to <code>kernel_main()</code>.</p>
     </section>
+
+    <hr style="margin: 60px 0; border: 0; border-top: 2px dashed #FFF;">
+
+    <!-- GDT SECTION -->
+    <section id="gdt-setup">
+        <h1>Global Descriptor Table (GDT)</h1>
+        <p>In 64-bit Long Mode, segmentation is largely ignored, but a GDT is still <strong>required</strong> to define the code and data segments. AliOS 4 uses a "Flat Model."</p>
+
+        <h3>The GDT Layout</h3>
+        <p>Each entry is 8 bytes. The 64-bit Code Segment must have the <strong>L-bit</strong> (Long mode bit) set.</p>
+
+<pre>
+<span class="keyword">gdt64:</span>
+    <span class="keyword">dq</span> 0 <span class="comment">; Null Descriptor (Required)</span>
+<span class="keyword">.code:</span> <span class="comment">; Kernel Code Segment</span>
+    <span class="keyword">dq</span> (1&lt;&lt;43) | (1&lt;&lt;44) | (1&lt;&lt;47) | (1&lt;&lt;53) <span class="comment">; Long Mode bit set</span>
+<span class="keyword">.data:</span> <span class="comment">; Kernel Data Segment</span>
+    <span class="keyword">dq</span> (1&lt;&lt;44) | (1&lt;&lt;47) | (1&lt;&lt;41)
+<span class="keyword">.pointer:</span>
+    <span class="keyword">dw</span> $ - gdt64 - 1
+    <span class="keyword">dq</span> gdt64
+</pre>
+
+        <div class="note">
+            <strong>Technical Note:</strong> Even though base and limit are ignored in 64-bit mode, if the Code Segment isn't correctly defined, the CPU will <strong>Triple Fault</strong> the moment it tries to execute 64-bit C code.
+        </div>
+    </section>
+
+    <hr style="margin: 60px 0; border: 0; border-top: 2px dashed #FFF;">
+
+    <!-- AUDIO SECTION (PREVIOUS) -->
+    <section id="pc-speaker">
+        <h1>PC Speaker Driver</h1>
+        <p>Audio utilizes the <strong>PIT (Programmable Interval Timer)</strong> Channel 2.</p>
+        <p><strong>Stuttering Update:</strong> The stuttering in AliOS 4 is confirmed to be related to IRQ timing. Without an IDT (Interrupt Descriptor Table) to handle precise timing, the square wave frequency "drifts" during heavy VGA writes.</p>
+    </section>
+
+    <hr style="margin: 60px 0; border: 0; border-top: 2px dashed #FFF;">
+
+    <!-- VGA SECTION (PREVIOUS) -->
+    <section id="vga-notebook">
+        <h1>VGA Notebook UI</h1>
+        <p>Standard 0xB8000 buffer using the <strong>0x1E</strong> attribute byte.</p>
+        <p><strong>Color:</strong> Blue Background (#0000AA), Yellow Text (#FFFF55).</p>
+    </section>
+
 </main>
 
 </body>
