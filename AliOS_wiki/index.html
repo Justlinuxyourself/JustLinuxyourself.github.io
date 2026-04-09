@@ -5,88 +5,101 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AliOS 4 Engineering Bible</title>
     <style>
-        :root {
-            --bg-blue: #0000AA;
-            --text-yellow: #FFFF55;
-            --sidebar-blue: #000066;
-            --code-bg: #000000;
-        }
+    :root {
+        --bg-blue: #0000AA;
+        --text-yellow: #FFFF55;
+        --sidebar-blue: #000066;
+        --code-bg: #000000;
+    }
 
-        body {
-            background-color: var(--bg-blue);
-            color: var(--text-yellow);
-            font-family: 'Courier New', Courier, monospace;
-            margin: 0;
-            display: flex;
-        }
+    body {
+        background-color: var(--bg-blue);
+        color: var(--text-yellow);
+        font-family: 'Courier New', Courier, monospace;
+        margin: 0;
+        display: flex;
+        flex-direction: row;
+    }
 
-        /* Sidebar Navigation */
+    /* Sidebar Navigation - Desktop Default */
+    nav {
+        width: 250px;
+        background-color: var(--sidebar-blue);
+        height: 100vh;
+        position: fixed;
+        border-right: 2px solid var(--text-yellow);
+        padding: 20px;
+        overflow-y: auto;
+        z-index: 100;
+    }
+
+    nav h2 { color: #FFF; font-size: 1.2rem; border-bottom: 1px solid var(--text-yellow); }
+    nav ul { list-style: none; padding: 0; }
+    nav ul li { margin: 15px 0; }
+    nav ul li a { color: var(--text-yellow); text-decoration: none; font-weight: bold; display: block; }
+
+    /* Main Content */
+    main { 
+        margin-left: 290px; 
+        padding: 20px; 
+        width: 100%;
+        max-width: 900px; 
+    }
+
+    .infobox {
+        float: right;
+        width: 100%;
+        max-width: 300px;
+        border: 2px solid var(--text-yellow);
+        background: var(--sidebar-blue);
+        margin: 0 0 20px 20px;
+        padding: 10px;
+    }
+
+    pre {
+        background-color: var(--code-bg);
+        color: #00FF00;
+        padding: 15px;
+        border: 1px dashed var(--text-yellow);
+        overflow-x: auto;
+        white-space: pre-wrap; /* Forces code to wrap on small screens */
+        word-wrap: break-word;
+    }
+
+    table { width: 100%; border-collapse: collapse; margin: 20px 0; font-size: 0.9rem; }
+    th, td { border: 1px solid var(--text-yellow); padding: 8px; }
+
+    /* --- MOBILE RESPONSIVE LOGIC --- */
+    @media (max-width: 768px) {
+        body { flex-direction: column; }
+        
         nav {
-            width: 250px;
-            background-color: var(--sidebar-blue);
-            height: 100vh;
-            position: fixed;
-            border-right: 2px solid var(--text-yellow);
-            padding: 20px;
-            overflow-y: auto;
+            position: relative;
+            width: 100%;
+            height: auto;
+            border-right: none;
+            border-bottom: 2px solid var(--text-yellow);
+            box-sizing: border-box;
         }
 
-        nav h2 { color: #FFF; font-size: 1.2rem; border-bottom: 1px solid var(--text-yellow); }
-        nav ul { list-style: none; padding: 0; }
-        nav ul li { margin: 15px 0; }
-        nav ul li a { color: var(--text-yellow); text-decoration: none; font-weight: bold; }
-        nav ul li a:hover { color: #FFF; text-decoration: underline; }
+        nav ul { display: flex; flex-wrap: wrap; gap: 10px; }
+        nav ul li { margin: 5px 0; }
 
-        /* Main Content */
-        main { margin-left: 290px; padding: 40px; max-width: 1000px; }
+        main {
+            margin-left: 0;
+            padding: 15px;
+            box-sizing: border-box;
+        }
 
         .infobox {
-            float: right;
-            width: 300px;
-            border: 2px solid var(--text-yellow);
-            background: var(--sidebar-blue);
-            margin-left: 20px;
-            padding: 10px;
+            float: none;
+            margin-left: 0;
+            max-width: 100%;
         }
 
-        h1, h2, h3 { color: #FFF; border-bottom: 1px solid var(--text-yellow); padding-bottom: 5px; }
-        
-        code, pre {
-            background-color: var(--code-bg);
-            color: #00FF00;
-            padding: 15px;
-            display: block;
-            border: 1px dashed var(--text-yellow);
-            overflow-x: auto;
-            line-height: 1.4;
-        }
-
-        .comment { color: #888; font-style: italic; }
-        .keyword { color: #ff79c6; }
-        .address { color: #bd93f9; }
-
-        .note {
-            background: #222;
-            border-left: 5px solid var(--text-yellow);
-            padding: 10px;
-            margin: 20px 0;
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin: 20px 0;
-            background: var(--code-bg);
-        }
-
-        th, td {
-            border: 1px solid var(--text-yellow);
-            padding: 10px;
-            text-align: left;
-        }
-
-        th { background: var(--sidebar-blue); color: #FFF; }
-    </style>
+        h1 { font-size: 1.5rem; }
+    }
+</style>
 </head>
 <body>
 
