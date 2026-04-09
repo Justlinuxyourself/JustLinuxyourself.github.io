@@ -53,7 +53,7 @@
         
         code, pre {
             background-color: var(--code-bg);
-            color: #00FF00; /* Classic Green terminal text */
+            color: #00FF00;
             padding: 15px;
             display: block;
             border: 1px dashed var(--text-yellow);
@@ -71,6 +71,21 @@
             padding: 10px;
             margin: 20px 0;
         }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            background: var(--code-bg);
+        }
+
+        th, td {
+            border: 1px solid var(--text-yellow);
+            padding: 10px;
+            text-align: left;
+        }
+
+        th { background: var(--sidebar-blue); color: #FFF; }
     </style>
 </head>
 <body>
@@ -83,6 +98,9 @@
         <li><a href="#gdt-setup">GDT & Segments</a></li>
         <li><a href="#pc-speaker">PC Speaker Driver</a></li>
         <li><a href="#vga-notebook">VGA Notebook UI</a></li>
+        <li><a href="#memory-tools">Memory (Peek/Poke)</a></li>
+        <li><a href="#aliscript-vm">AliScript Compiler</a></li>
+        <li><a href="#system-map">Physical Memory Map</a></li>
     </ul>
 </nav>
 
@@ -93,12 +111,12 @@
             <h3 style="text-align:center; margin-top:0;">AliOS 4 Specs</h3>
             <p><strong>Arch:</strong> x86-64</p>
             <p><strong>Mode:</strong> Long Mode</p>
-            <p><strong>Colors:</strong> 0x1E</p>
+            <p><strong>Colors:</strong> 0x1E (Blue/Yellow)</p>
+            <p><strong>Language:</strong> C / NASM / AliScript</p>
             <p><strong>Dev:</strong> Ali</p>
-            <p><strong>Age:</strong> 12</p>
         </div>
         <h1>AliOS 4: Main Page</h1>
-        <p>This Engineering Bible documents the transition of AliOS 4 into a 64-bit environment. It is the primary reference for the <strong>Notebook UI</strong> and hardware integration.</p>
+        <p>This Engineering Bible documents the transition of AliOS 4 into a 64-bit environment. It is the primary reference for the <strong>Notebook UI</strong> and advanced kernel-space programming.</p>
         
         <div class="note">
             <strong>Current Goal:</strong> Reach 60 pages of technical specifications for project validation.
@@ -112,7 +130,6 @@
         <h1>Kernel Entry Point (_start)</h1>
         <p>When GRUB loads AliOS 4, it follows the <strong>Multiboot2</strong> protocol. The entry point is defined in assembly to bridge the gap between the bootloader and C code.</p>
 
-        <h3>Assembly Header (boot.asm)</h3>
 <pre>
 <span class="keyword">section</span> .text
 <span class="keyword">bits</span> 32 <span class="comment">; GRUB starts us in 32-bit Protected Mode</span>
@@ -121,60 +138,99 @@
 <span class="keyword">_start:</span>
     <span class="keyword">cli</span>             <span class="comment">; Disable interrupts</span>
     <span class="keyword">mov</span> esp, stack_top <span class="comment">; Setup stack</span>
-
-    <span class="comment">; Hand over to Long Mode Setup</span>
-    <span class="keyword">call</span> check_multiboot
     <span class="keyword">call</span> setup_paging
     <span class="keyword">call</span> load_gdt
-    
     <span class="keyword">jmp</span> gdt64.code:long_mode_start
 </pre>
-        <p>This code ensures the CPU is prepared for 64-bit instructions before jumping to <code>kernel_main()</code>.</p>
     </section>
 
     <hr style="margin: 60px 0; border: 0; border-top: 2px dashed #FFF;">
 
-    <!-- GDT SECTION -->
-    <section id="gdt-setup">
-        <h1>Global Descriptor Table (GDT)</h1>
-        <p>In 64-bit Long Mode, segmentation is largely ignored, but a GDT is still <strong>required</strong> to define the code and data segments. AliOS 4 uses a "Flat Model."</p>
+    <!-- MEMORY TOOLS SECTION -->
+    <section id="memory-tools">
+        <h1>Memory Manipulation & Debugging</h1>
+        <p>AliOS 4 provides Ring 0 access to physical RAM. This is essential for debugging the <strong>Notebook UI</strong> and verifying the Kernel Heap state.</p>
 
-        <h3>The GDT Layout</h3>
-        <p>Each entry is 8 bytes. The 64-bit Code Segment must have the <strong>L-bit</strong> (Long mode bit) set.</p>
+        <h3>PEEK: Reading Raw Data</h3>
+        <p>The <code>peek</code> command dereferences a pointer at a specific hex address. It allows the engineer to inspect the <strong>Interrupt Vector Table (IVT)</strong> or the <strong>BIOS Data Area</strong>.</p>
 
-<pre>
-<span class="keyword">gdt64:</span>
-    <span class="keyword">dq</span> 0 <span class="comment">; Null Descriptor (Required)</span>
-<span class="keyword">.code:</span> <span class="comment">; Kernel Code Segment</span>
-    <span class="keyword">dq</span> (1&lt;&lt;43) | (1&lt;&lt;44) | (1&lt;&lt;47) | (1&lt;&lt;53) <span class="comment">; Long Mode bit set</span>
-<span class="keyword">.data:</span> <span class="comment">; Kernel Data Segment</span>
-    <span class="keyword">dq</span> (1&lt;&lt;44) | (1&lt;&lt;47) | (1&lt;&lt;41)
-<span class="keyword">.pointer:</span>
-    <span class="keyword">dw</span> $ - gdt64 - 1
-    <span class="keyword">dq</span> gdt64
-</pre>
-
+        <h3>POKE: Live Hardware Patching</h3>
+        <p>By writing directly to <code>0xB8000</code>, the operator can manipulate screen attributes in real-time. Usage of <code>poke</code> bypasses standard driver logic.</p>
         <div class="note">
-            <strong>Technical Note:</strong> Even though base and limit are ignored in 64-bit mode, if the Code Segment isn't correctly defined, the CPU will <strong>Triple Fault</strong> the moment it tries to execute 64-bit C code.
+            <strong>Security Warning:</strong> Overwriting addresses in the <code>0x100000</code> range will corrupt kernel machine code, resulting in an immediate <strong>General Protection Fault</strong>.
         </div>
     </section>
 
     <hr style="margin: 60px 0; border: 0; border-top: 2px dashed #FFF;">
 
-    <!-- AUDIO SECTION (PREVIOUS) -->
-    <section id="pc-speaker">
-        <h1>PC Speaker Driver</h1>
-        <p>Audio utilizes the <strong>PIT (Programmable Interval Timer)</strong> Channel 2.</p>
-        <p><strong>Stuttering Update:</strong> The stuttering in AliOS 4 is confirmed to be related to IRQ timing. Without an IDT (Interrupt Descriptor Table) to handle precise timing, the square wave frequency "drifts" during heavy VGA writes.</p>
+    <!-- ALISCRIPT SECTION -->
+    <section id="aliscript-vm">
+        <h1>AliScript: The Native Programming Language</h1>
+        <p>AliScript is a <strong>Stack-Oriented</strong> interpreted language built into <code>aliscr.c</code>. It allows for dynamic program execution within the shell.</p>
+
+        <h3>Architecture: LIFO Stack</h3>
+        <p>Instructions use "Post-Fix" notation. The stack is 64 slots deep, preventing overflow during complex math operations.</p>
+<pre>
+<span class="comment">; Example: Math and Graphics</span>
+<span class="keyword">run</span> 50 50 <span class="keyword">add</span> <span class="keyword">print</span>    <span class="comment">; Result: 100</span>
+<span class="keyword">run</span> 0xB8000 0x41 <span class="keyword">poke</span>  <span class="comment">; Writes 'A' to screen</span>
+</pre>
+
+        <h3>Instruction Set Architecture (ISA)</h3>
+        <table>
+            <tr><th>Mnemonic</th><th>Stack Effect</th><th>Description</th></tr>
+            <tr><td>add / sub / mul</td><td>( a b -- res )</td><td>Standard Arithmetic</td></tr>
+            <tr><td>set_x / get_x</td><td>( val -- )</td><td>Store/Retrieve from Registers a-z</td></tr>
+            <tr><td>cls</td><td>( -- )</td><td>Clear Notebook Screen</td></tr>
+            <tr><td>plane</td><td>( -- )</td><td>Triggers ASCII Graphics Engine</td></tr>
+        </table>
     </section>
 
     <hr style="margin: 60px 0; border: 0; border-top: 2px dashed #FFF;">
 
-    <!-- VGA SECTION (PREVIOUS) -->
+    <!-- SYSTEM MAP SECTION -->
+    <section id="system-map">
+        <h1>Physical Memory Map</h1>
+        <p>The following table defines the memory layout of AliOS 4 for low-level development.</p>
+
+        <table>
+            <tr>
+                <th>Address Range</th>
+                <th>Description</th>
+                <th>Usage</th>
+            </tr>
+            <tr>
+                <td class="address">0x00000400</td>
+                <td>BIOS Data Area</td>
+                <td>Hardware Flags</td>
+            </tr>
+            <tr>
+                <td class="address">0x000B8000</td>
+                <td>VGA Buffer</td>
+                <td>Notebook Display</td>
+            </tr>
+            <tr>
+                <td class="address">0x00100000</td>
+                <td>Kernel Image</td>
+                <td>Executable Code</td>
+            </tr>
+            <tr>
+                <td class="address">0x00200000</td>
+                <td>Kernel Heap</td>
+                <td>Dynamic Memory / AliScript Vars</td>
+            </tr>
+        </table>
+    </section>
+
+    <hr style="margin: 60px 0; border: 0; border-top: 2px dashed #FFF;">
+
+    <!-- VGA SECTION -->
     <section id="vga-notebook">
         <h1>VGA Notebook UI</h1>
-        <p>Standard 0xB8000 buffer using the <strong>0x1E</strong> attribute byte.</p>
-        <p><strong>Color:</strong> Blue Background (#0000AA), Yellow Text (#FFFF55).</p>
+        <p>The AliOS 4 UI operates in 80x25 Text Mode. Every character occupies 2 bytes: the ASCII character and the <strong>Attribute Byte</strong>.</p>
+        <div class="note">
+            <strong>Attribute 0x1E:</strong> Binary <code>0001 1110</code>. Background: Blue (1), Foreground: Yellow (14).
+        </div>
     </section>
 
 </main>
