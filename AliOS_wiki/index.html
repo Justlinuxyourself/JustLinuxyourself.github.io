@@ -19,9 +19,9 @@
         margin: 0;
         display: flex;
         flex-direction: row;
+        transition: direction 0.3s ease;
     }
 
-    /* Sidebar Navigation - Desktop Default */
     nav {
         width: 250px;
         background-color: var(--sidebar-blue);
@@ -31,6 +31,7 @@
         padding: 20px;
         overflow-y: auto;
         z-index: 100;
+        left: 0;
     }
 
     nav h2 { color: #FFF; font-size: 1.2rem; border-bottom: 1px solid var(--text-yellow); }
@@ -38,12 +39,37 @@
     nav ul li { margin: 15px 0; }
     nav ul li a { color: var(--text-yellow); text-decoration: none; font-weight: bold; display: block; }
 
-    /* Main Content */
+    .lang-box {
+        margin-bottom: 20px;
+        padding-bottom: 15px;
+        border-bottom: 1px dashed var(--text-yellow);
+    }
+    select {
+        background: var(--code-bg);
+        color: var(--text-yellow);
+        border: 1px solid var(--text-yellow);
+        padding: 5px;
+        font-family: monospace;
+        width: 100%;
+    }
+
     main { 
         margin-left: 290px; 
         padding: 20px; 
         width: 100%;
         max-width: 900px; 
+        transition: margin 0.3s ease;
+    }
+
+    body[dir="rtl"] nav {
+        left: auto;
+        right: 0;
+        border-right: none;
+        border-left: 2px solid var(--text-yellow);
+    }
+    body[dir="rtl"] main {
+        margin-left: 0;
+        margin-right: 290px;
     }
 
     .infobox {
@@ -55,6 +81,7 @@
         margin: 0 0 20px 20px;
         padding: 10px;
     }
+    body[dir="rtl"] .infobox { float: left; margin: 0 20px 20px 0; }
 
     pre {
         background-color: var(--code-bg);
@@ -62,191 +89,165 @@
         padding: 15px;
         border: 1px dashed var(--text-yellow);
         overflow-x: auto;
-        white-space: pre-wrap; /* Forces code to wrap on small screens */
-        word-wrap: break-word;
+        direction: ltr !important;
+        text-align: left;
     }
 
-    table { width: 100%; border-collapse: collapse; margin: 20px 0; font-size: 0.9rem; }
-    th, td { border: 1px solid var(--text-yellow); padding: 8px; }
+    .note {
+        background: #5555FF;
+        color: #FFF;
+        padding: 10px;
+        border-left: 5px solid #FFF;
+        margin: 20px 0;
+    }
+    body[dir="rtl"] .note { border-left: none; border-right: 5px solid #FFF; }
 
-    /* --- MOBILE RESPONSIVE LOGIC --- */
+    table { width: 100%; border-collapse: collapse; margin: 20px 0; }
+    th, td { border: 1px solid var(--text-yellow); padding: 8px; text-align: center; }
+
     @media (max-width: 768px) {
         body { flex-direction: column; }
-        
-        nav {
-            position: relative;
-            width: 100%;
-            height: auto;
-            border-right: none;
-            border-bottom: 2px solid var(--text-yellow);
-            box-sizing: border-box;
-        }
-
-        nav ul { display: flex; flex-wrap: wrap; gap: 10px; }
-        nav ul li { margin: 5px 0; }
-
-        main {
-            margin-left: 0;
-            padding: 15px;
-            box-sizing: border-box;
-        }
-
-        .infobox {
-            float: none;
-            margin-left: 0;
-            max-width: 100%;
-        }
-
-        h1 { font-size: 1.5rem; }
+        nav { position: relative; width: 100%; height: auto; border: none; border-bottom: 2px solid var(--text-yellow); }
+        main { margin: 0 !important; padding: 15px; }
+        .infobox { float: none; max-width: 100%; }
     }
 </style>
 </head>
 <body>
 
 <nav>
-    <h2>AliOS 4 Wiki</h2>
+    <div class="lang-box">
+        <label data-key="select-lang">Language:</label>
+        <select onchange="setLanguage(this.value)">
+            <option value="en">English</option>
+            <option value="ar">العربية</option>
+        </select>
+    </div>
+    <h2 data-key="wiki-title">AliOS 4 Wiki</h2>
     <ul>
-        <li><a href="#main">Main Page</a></li>
-        <li><a href="#kernel-entry">Kernel Entry (_start)</a></li>
-        <li><a href="#gdt-setup">GDT & Segments</a></li>
-        <li><a href="#pc-speaker">PC Speaker Driver</a></li>
-        <li><a href="#vga-notebook">VGA Notebook UI</a></li>
-        <li><a href="#memory-tools">Memory (Peek/Poke)</a></li>
-        <li><a href="#aliscript-vm">AliScript Compiler</a></li>
-        <li><a href="#system-map">Physical Memory Map</a></li>
+        <li><a href="#main" data-key="nav-main">Main Page</a></li>
+        <li><a href="#kernel-entry" data-key="nav-kernel">Kernel Entry</a></li>
+        <li><a href="#gdt-setup" data-key="nav-gdt">GDT & Segments</a></li>
+        <li><a href="#aliscript-vm" data-key="nav-aliscript">AliScript VM</a></li>
+        <li><a href="#system-map" data-key="nav-map">Memory Map</a></li>
     </ul>
 </nav>
 
 <main>
-    <!-- MAIN PAGE -->
     <section id="main">
         <div class="infobox">
-            <h3 style="text-align:center; margin-top:0;">AliOS 4 Specs</h3>
-            <p><strong>Arch:</strong> x86-64</p>
-            <p><strong>Mode:</strong> Long Mode</p>
-            <p><strong>Colors:</strong> 0x1E (Blue/Yellow)</p>
-            <p><strong>Language:</strong> C / NASM / AliScript</p>
-            <p><strong>Dev:</strong> Ali</p>
+            <h3 style="text-align:center; margin-top:0;" data-key="specs-h">AliOS 4 Specs</h3>
+            <p><strong data-key="spec-arch">Arch:</strong> x86-64</p>
+            <p><strong data-key="spec-mode">Mode:</strong> Long Mode</p>
+            <p><strong data-key="spec-color">Colors:</strong> 0x1E</p>
         </div>
-        <h1>AliOS 4: Main Page</h1>
-        <p>This Engineering Bible documents the transition of AliOS 4 into a 64-bit environment. It is the primary reference for the <strong>Notebook UI</strong> and advanced kernel-space programming.</p>
-        
+        <h1 data-key="main-h">AliOS 4: Main Page</h1>
+        <p data-key="main-p">This Engineering Bible documents the transition of AliOS 4 into a 64-bit environment.</p>
         <div class="note">
-            <strong>Current Goal:</strong> Reach 60 pages of technical specifications for project validation.
+            <strong data-key="goal-h">Current Goal:</strong> <span data-key="goal-p">Reach 60 pages of technical specifications.</span>
         </div>
     </section>
 
-    <hr style="margin: 60px 0; border: 0; border-top: 2px dashed #FFF;">
+    <hr>
 
-    <!-- KERNEL ENTRY SECTION -->
     <section id="kernel-entry">
-        <h1>Kernel Entry Point (_start)</h1>
-        <p>When GRUB loads AliOS 4, it follows the <strong>Multiboot2</strong> protocol. The entry point is defined in assembly to bridge the gap between the bootloader and C code.</p>
-
+        <h1 data-key="kernel-h">Kernel Entry (_start)</h1>
+        <p data-key="kernel-p">The entry point bridges the gap between the bootloader and C code.</p>
 <pre>
-<span class="keyword">section</span> .text
-<span class="keyword">bits</span> 32 <span class="comment">; GRUB starts us in 32-bit Protected Mode</span>
-
-<span class="keyword">global</span> _start
-<span class="keyword">_start:</span>
-    <span class="keyword">cli</span>             <span class="comment">; Disable interrupts</span>
-    <span class="keyword">mov</span> esp, stack_top <span class="comment">; Setup stack</span>
-    <span class="keyword">call</span> setup_paging
-    <span class="keyword">call</span> load_gdt
-    <span class="keyword">jmp</span> gdt64.code:long_mode_start
+section .text
+bits 32
+global _start
+_start:
+    cli
+    mov esp, stack_top
+    call setup_paging
+    jmp gdt64.code:long_mode_start
 </pre>
     </section>
 
-    <hr style="margin: 60px 0; border: 0; border-top: 2px dashed #FFF;">
+    <hr>
 
-    <!-- MEMORY TOOLS SECTION -->
-    <section id="memory-tools">
-        <h1>Memory Manipulation & Debugging</h1>
-        <p>AliOS 4 provides Ring 0 access to physical RAM. This is essential for debugging the <strong>Notebook UI</strong> and verifying the Kernel Heap state.</p>
-
-        <h3>PEEK: Reading Raw Data</h3>
-        <p>The <code>peek</code> command dereferences a pointer at a specific hex address. It allows the engineer to inspect the <strong>Interrupt Vector Table (IVT)</strong> or the <strong>BIOS Data Area</strong>.</p>
-
-        <h3>POKE: Live Hardware Patching</h3>
-        <p>By writing directly to <code>0xB8000</code>, the operator can manipulate screen attributes in real-time. Usage of <code>poke</code> bypasses standard driver logic.</p>
-        <div class="note">
-            <strong>Security Warning:</strong> Overwriting addresses in the <code>0x100000</code> range will corrupt kernel machine code, resulting in an immediate <strong>General Protection Fault</strong>.
-        </div>
+    <section id="gdt-setup">
+        <h1 data-key="gdt-h">GDT & Segments</h1>
+        <p data-key="gdt-p">The Global Descriptor Table defines memory segments in Long Mode.</p>
+<pre>
+gdt64:
+    dq 0 ; null descriptor
+    dq (1<<43) | (1<<44) | (1<<47) | (1<<53) ; code segment
+</pre>
     </section>
 
-    <hr style="margin: 60px 0; border: 0; border-top: 2px dashed #FFF;">
+    <hr>
 
-    <!-- ALISCRIPT SECTION -->
     <section id="aliscript-vm">
-        <h1>AliScript: The Native Programming Language</h1>
-        <p>AliScript is a <strong>Stack-Oriented</strong> interpreted language built into <code>aliscr.c</code>. It allows for dynamic program execution within the shell.</p>
-
-        <h3>Architecture: LIFO Stack</h3>
-        <p>Instructions use "Post-Fix" notation. The stack is 64 slots deep, preventing overflow during complex math operations.</p>
-<pre>
-<span class="comment">; Example: Math and Graphics</span>
-<span class="keyword">run</span> 50 50 <span class="keyword">add</span> <span class="keyword">print</span>    <span class="comment">; Result: 100</span>
-<span class="keyword">run</span> 0xB8000 0x41 <span class="keyword">poke</span>  <span class="comment">; Writes 'A' to screen</span>
-</pre>
-
-        <h3>Instruction Set Architecture (ISA)</h3>
+        <h1 data-key="aliscript-h">AliScript VM</h1>
+        <p data-key="aliscript-p">A stack-oriented interpreter for dynamic kernel execution.</p>
         <table>
-            <tr><th>Mnemonic</th><th>Stack Effect</th><th>Description</th></tr>
-            <tr><td>add / sub / mul</td><td>( a b -- res )</td><td>Standard Arithmetic</td></tr>
-            <tr><td>set_x / get_x</td><td>( val -- )</td><td>Store/Retrieve from Registers a-z</td></tr>
-            <tr><td>cls</td><td>( -- )</td><td>Clear Notebook Screen</td></tr>
-            <tr><td>plane</td><td>( -- )</td><td>Triggers ASCII Graphics Engine</td></tr>
+            <tr><th data-key="th-mnemonic">Mnemonic</th><th data-key="th-effect">Stack Effect</th></tr>
+            <tr><td>add</td><td>( a b -- res )</td></tr>
+            <tr><td>poke</td><td>( addr val -- )</td></tr>
         </table>
     </section>
 
-    <hr style="margin: 60px 0; border: 0; border-top: 2px dashed #FFF;">
+    <hr>
 
-    <!-- SYSTEM MAP SECTION -->
     <section id="system-map">
-        <h1>Physical Memory Map</h1>
-        <p>The following table defines the memory layout of AliOS 4 for low-level development.</p>
-
+        <h1 data-key="map-h">Physical Memory Map</h1>
         <table>
-            <tr>
-                <th>Address Range</th>
-                <th>Description</th>
-                <th>Usage</th>
-            </tr>
-            <tr>
-                <td class="address">0x00000400</td>
-                <td>BIOS Data Area</td>
-                <td>Hardware Flags</td>
-            </tr>
-            <tr>
-                <td class="address">0x000B8000</td>
-                <td>VGA Buffer</td>
-                <td>Notebook Display</td>
-            </tr>
-            <tr>
-                <td class="address">0x00100000</td>
-                <td>Kernel Image</td>
-                <td>Executable Code</td>
-            </tr>
-            <tr>
-                <td class="address">0x00200000</td>
-                <td>Kernel Heap</td>
-                <td>Dynamic Memory / AliScript Vars</td>
-            </tr>
+            <thead>
+                <tr>
+                    <th data-key="th-addr">Address Range</th>
+                    <th data-key="th-desc">Description</th>
+                    <th data-key="th-usage">Usage</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr><td>0x000B8000</td><td data-key="td-vga">VGA Buffer</td><td data-key="td-vga-u">Notebook Display</td></tr>
+                <tr><td>0x00100000</td><td data-key="td-kern">Kernel Image</td><td data-key="td-kern-u">Executable Code</td></tr>
+            </tbody>
         </table>
     </section>
-
-    <hr style="margin: 60px 0; border: 0; border-top: 2px dashed #FFF;">
-
-    <!-- VGA SECTION -->
-    <section id="vga-notebook">
-        <h1>VGA Notebook UI</h1>
-        <p>The AliOS 4 UI operates in 80x25 Text Mode. Every character occupies 2 bytes: the ASCII character and the <strong>Attribute Byte</strong>.</p>
-        <div class="note">
-            <strong>Attribute 0x1E:</strong> Binary <code>0001 1110</code>. Background: Blue (1), Foreground: Yellow (14).
-        </div>
-    </section>
-
 </main>
 
+<script>
+const langData = {
+    "en": {
+        "select-lang": "Language:",
+        "wiki-title": "AliOS 4 Wiki",
+        "nav-main": "Main Page", "nav-kernel": "Kernel Entry", "nav-gdt": "GDT Setup", "nav-aliscript": "AliScript VM", "nav-map": "Memory Map",
+        "specs-h": "AliOS 4 Specs", "spec-arch": "Arch:", "spec-mode": "Mode:", "spec-color": "Colors:",
+        "main-h": "AliOS 4: Main Page", "main-p": "Documentation for the 64-bit transition.",
+        "goal-h": "Current Goal:", "goal-p": "Reach 60 pages of specifications.",
+        "kernel-h": "Kernel Entry (_start)", "kernel-p": "Bridges bootloader to C code.",
+        "gdt-h": "GDT & Segments", "gdt-p": "Defines memory segments for Long Mode.",
+        "aliscript-h": "AliScript VM", "aliscript-p": "Stack-oriented interpreter.",
+        "th-mnemonic": "Mnemonic", "th-effect": "Stack Effect",
+        "map-h": "Physical Memory Map", "th-addr": "Address Range", "th-desc": "Description", "th-usage": "Usage",
+        "td-vga": "VGA Buffer", "td-vga-u": "Notebook Display", "td-kern": "Kernel Image", "td-kern-u": "Executable Code"
+    },
+    "ar": {
+        "select-lang": "اللغة:",
+        "wiki-title": "ويكي AliOS 4",
+        "nav-main": "الرئيسية", "nav-kernel": "نقطة الدخول", "nav-gdt": "إعداد GDT", "nav-aliscript": "AliScript VM", "nav-map": "خريطة الذاكرة",
+        "specs-h": "مواصفات AliOS 4", "spec-arch": "المعمارية:", "spec-mode": "الوضع:", "spec-color": "الألوان:",
+        "main-h": "AliOS 4: الرئيسية", "main-p": "توثيق الانتقال إلى بيئة 64 بت.",
+        "goal-h": "الهدف الحالي:", "goal-p": "الوصول إلى 60 صفحة من المواصفات.",
+        "kernel-h": "نقطة دخول النواة", "kernel-p": "تربط بين محمل الإقلاع وكود C.",
+        "gdt-h": "جدول GDT والأقسام", "gdt-p": "يحدد مقاطع الذاكرة في الوضع الطويل.",
+        "aliscript-h": "AliScript VM", "aliscript-p": "مفسر يعتمد على المكدس.",
+        "th-mnemonic": "الأمر", "th-effect": "تأثير المكدس",
+        "map-h": "خريطة الذاكرة الفيزيائية", "th-addr": "نطاق العنوان", "th-desc": "الوصف", "th-usage": "الاستخدام",
+        "td-vga": "ذاكرة VGA", "td-vga-u": "عرض المفكرة", "td-kern": "صورة النواة", "td-kern-u": "الكود التنفيذي"
+    }
+};
+
+function setLanguage(lang) {
+    document.body.setAttribute("dir", lang === "ar" ? "rtl" : "ltr");
+    document.querySelectorAll("[data-key]").forEach(el => {
+        const key = el.getAttribute("data-key");
+        if (langData[lang][key]) el.innerText = langData[lang][key];
+    });
+}
+</script>
 </body>
 </html>
