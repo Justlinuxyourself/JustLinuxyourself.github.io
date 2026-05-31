@@ -12,18 +12,19 @@
             --dim: #8b949e;
             --card: #0e1116;
             --terminal-green: #00ff41;
+            --terminal-red: #ff3333;
         }
 
-        * { box-sizing: border-box; transition: all 0.3s ease; scroll-behavior: smooth; }
-        body { background: var(--bg); color: var(--text); font-family: 'Inter', sans-serif; margin: 0; }
+        * { box-sizing: border-box; transition: all 0.2s ease; scroll-behavior: smooth; }
+        body { background: var(--bg); color: var(--text); font-family: 'Inter', sans-serif; margin: 0; padding-bottom: 40px; }
 
-        /* Branding & Hero */
         nav { display: flex; justify-content: space-between; padding: 30px 10%; position: absolute; width: 100%; z-index: 10; }
         .logo { font-family: monospace; font-weight: bold; color: var(--accent); }
 
         header {
             height: 90vh; display: flex; flex-direction: column; align-items: center; justify-content: center;
             text-align: center; background: radial-gradient(circle at center, #0a192f 0%, #050608 100%);
+            padding: 0 20px;
         }
 
         h1 { font-size: clamp(2.5rem, 8vw, 4rem); margin: 0; font-weight: 800; }
@@ -36,22 +37,29 @@
         .btn-outline { border-color: var(--dim); color: var(--dim); }
         .btn-outline:hover { border-color: var(--accent); color: var(--accent); }
 
-        /* System Requirements Table */
         .section-title { text-align: center; margin: 60px 0 30px; font-family: monospace; color: var(--accent); }
         .table-container { padding: 0 10%; display: flex; justify-content: center; }
         table { width: 100%; max-width: 800px; border-collapse: collapse; background: var(--card); border: 1px solid #222; }
         th, td { padding: 15px; text-align: left; border-bottom: 1px solid #222; font-size: 0.9rem; }
         th { color: var(--accent); font-family: monospace; }
 
-        /* ISO Section */
         #download { padding: 80px 10%; text-align: center; }
         .iso-card { border: 2px dashed #333; padding: 40px; display: inline-block; border-radius: 20px; }
 
-        /* Contributors */
         .contributors { padding: 60px 10%; text-align: center; color: var(--dim); font-size: 0.8rem; }
 
-        /* Terminal Overlay */
-        #term { position: fixed; inset: 0; background: #000; z-index: 100; display: none; padding: 40px; color: var(--terminal-green); font-family: monospace; overflow-y: auto; }
+        #term { position: fixed; inset: 0; background: #000; z-index: 100; display: none; padding: 40px 20px; font-family: monospace; overflow-y: auto; }
+        .log-green { color: var(--terminal-green); }
+        .log-red { color: var(--terminal-red); }
+        .log-white { color: #fff; }
+        .log-dim { color: var(--dim); }
+        
+        .close-term { position: absolute; top: 20px; right: 20px; background: transparent; border: 1px solid #333; color: var(--dim); padding: 5px 15px; cursor: pointer; font-family: monospace; z-index: 110; }
+        .close-term:hover { color: #fff; border-color: var(--accent); }
+
+        .term-btn-group { display: flex; gap: 15px; margin: 15px 0; flex-wrap: wrap; }
+        .term-btn { background: #111; border: 1px solid var(--terminal-green); color: var(--terminal-green); padding: 10px 20px; cursor: pointer; font-family: monospace; font-size: 0.9rem; border-radius: 4px; }
+        .term-btn:hover { background: var(--terminal-green); color: #000; }
     </style>
 </head>
 <body>
@@ -65,9 +73,9 @@
     <h1>Pure C. <span>Zero Bloat.</span></h1>
     <p style="color: var(--dim); max-width: 500px; margin: 20px 0;">A hobbyist-grade operating system written in ANSI C and Assembly. No standard library, just raw hardware control.</p>
     <div class="btn-group">
-        <button class="btn btn-primary" onclick="startBoot()">Boot Kernel</button>
-        <a href="https://github.com/justlinuxyourself/Aero1EOS" target="_blank" class="btn btn-secondary">Source Code</a>
-        <a href="#download" class="btn btn-outline">Get ISO</a>
+        <button class="btn btn-primary" onclick="checkCompatibility(false)">Check My Device</button>
+        <button class="btn btn-outline" onclick="checkCompatibility(true)">Simulate PC Check</button>
+        <a href="https://github.com" target="_blank" class="btn btn-secondary">Source Code</a>
     </div>
 </header>
 
@@ -86,7 +94,7 @@
     <div class="iso-card">
         <h2 style="margin-top:0">v1.55-ALPHA-RELEASE</h2>
         <p style="color: var(--dim);">aero1eos4.iso</p>
-        <a href="https://github.com/Justlinuxyourself/Aero1EOS/releases/download/latest/aero1eos4.iso" class="btn btn-primary" download>DOWNLOAD .ISO</a>
+        <a href="https://github.com/releases/download/latest/aero1eos4.iso" class="btn btn-primary" download>DOWNLOAD .ISO</a>
     </div>
 </section>
 
@@ -95,44 +103,149 @@
     <p>Special thanks to: u, ily guys thx for support</p>
 </div>
 
-<div id="term"></div>
+<div id="term">
+    <button class="close-term" onclick="closeTerminal()">[ X ] Close</button>
+    <div id="term-content"></div>
+</div>
 
 <script>
-    const logs = [
-        "FUTURE OF ALIOS:",
-        "[Aero1EOS] GRUB bootloader detected...",
-        "[Aero1EOS] Kernel entry point reached at 0x100000",
-        "[Aero1EOS] Initializing GDT... Done.",
-        "[Aero1EOS] Initializing IDT... Done.",
-        "[Aero1EOS] Enabling Paging (4KB Pages)... Done.",
-        "[Aero1EOS] Setting up PIC/IRQ handling...",
-        "[Aero1EOS] Probing for ATA drives...",
-        "[Aero1EOS] Found: [Drive 0] 40GB VirtualDisk",
-        "[Aero1EOS] Initializing VESA Video Driver (1024x768)...",
-        "---------------------------------------------------",
-        "Aero1EOS KERNEL v1.55 | (C) 2026",
-        "Memory: 128MB assigned to heap.",
-        "Shell starting...",
-        "c:/$ _"
-    ];
+    let isX86 = true;
 
-    function startBoot() {
-        const t = document.getElementById('term');
-        t.style.display = 'block';
-        let i = 0;
-        function printLine() {
-            if (i < logs.length) {
-                const d = document.createElement('div');
-                d.textContent = logs[i];
-                t.appendChild(d);
-                t.scrollTop = t.scrollHeight;
-                i++;
-                setTimeout(printLine, Math.random() * 150);
-            }
+    window.userFirmware = "";
+    window.userStorage = "";
+
+    function closeTerminal() {
+        document.getElementById('term').style.display = 'none';
+        document.getElementById('term-content').innerHTML = '';
+    }
+
+    function appendLog(text, type = "white") {
+        const content = document.getElementById('term-content');
+        const term = document.getElementById('term');
+        const div = document.createElement('div');
+        div.textContent = text;
+        
+        if (type === "green") div.className = "log-green";
+        else if (type === "red") div.className = "log-red";
+        else if (type === "dim") div.className = "log-dim";
+        else div.className = "log-white";
+        
+        content.appendChild(div);
+        term.scrollTop = term.scrollHeight;
+    }
+
+    function appendActionButtons(options, callbackName) {
+        const content = document.getElementById('term-content');
+        const term = document.getElementById('term');
+        const container = document.createElement('div');
+        container.className = 'term-btn-group';
+
+        options.forEach(opt => {
+            const btn = document.createElement('button');
+            btn.className = 'term-btn';
+            btn.textContent = opt.label;
+            btn.onclick = function() {
+                container.remove();
+                window[callbackName](opt.value);
+            };
+            container.appendChild(btn);
+        });
+
+        content.appendChild(container);
+        term.scrollTop = term.scrollHeight;
+    }
+
+    function checkCompatibility(simulatePC = false) {
+        const term = document.getElementById('term');
+        term.style.display = 'block';
+        document.getElementById('term-content').innerHTML = '';
+
+        const userAgent = navigator.userAgent;
+        const cores = navigator.hardwareConcurrency || "Unknown";
+        
+        isX86 = true;
+        if (/iPhone|iPad|iPod|Android|ARM|Macintosh/i.test(userAgent) && !/Intel/i.test(userAgent)) {
+            isX86 = false;
         }
-        printLine();
+
+        if (simulatePC) isX86 = true;
+
+        appendLog("[Aero1EOS Hardware Prober v1.8]", "white");
+        appendLog("Initializing client-side diagnostics...", "green");
+        
+        setTimeout(() => {
+            appendLog(`Probing CPU Cores: Found ${simulatePC ? 8 : cores} logical threads.`, "green");
+            appendLog(`User-Agent Frame: ${simulatePC ? "Mozilla/5.0 (Windows NT 10.0; Win64; x86_64)..." : userAgent.substring(0, 50) + "..."}`, "dim");
+            appendLog("Verifying instruction set architecture...", "green");
+        }, 500);
+
+        setTimeout(() => {
+            if (!isX86) {
+                appendLog("[CRITICAL FAIL] Target platform utilizes ARM/Mobile architecture.", "red");
+                appendLog("[CRITICAL FAIL] Aero1EOS requires bare-metal x86_64 instructions.", "red");
+                appendLog("---------------------------------------------------", "white");
+                appendLog(">> STATUS: INCOMPATIBLE HARDWARE", "red");
+            } else {
+                appendLog("[SUCCESS] CPU Architecture matches x86_64 target framework.", "green");
+                appendLog("[SECURITY NOTICE] Browser sandbox restricts direct storage bus (IDE) or BIOS sector probing.", "white");
+                askFirmware();
+            }
+        }, 1200);
+    }
+
+    function askFirmware() {
+        appendLog("\n[PROMPT] Select target system firmware configuration:", "white");
+        appendActionButtons([
+            { label: "1. Legacy BIOS / CSM Mode", value: "bios" },
+            { label: "2. Pure UEFI (No Legacy Support)", value: "uefi" }
+        ], "handleFirmwareSelection");
+    }
+
+    window.handleFirmwareSelection = function(value) {
+        appendLog(`> Selected: ${value === 'bios' ? 'Legacy BIOS' : 'Pure UEFI'}`, "dim");
+        window.userFirmware = value;
+        setTimeout(askStorage, 400);
+    };
+
+    function askStorage() {
+        appendLog("\n[PROMPT] Select physical target storage controller interface:", "white");
+        appendActionButtons([
+            { label: "1. IDE / SATA Primary Interface", value: "sata" },
+            { label: "2. NVMe M.2 PCIe Solid State Storage", value: "nvme" }
+        ], "handleStorageSelection");
+    }
+
+    window.handleStorageSelection = function(value) {
+        appendLog(`> Selected: ${value === 'sata' ? 'IDE/SATA Disk' : 'NVMe Controller'}`, "dim");
+        window.userStorage = value;
+        setTimeout(printFinalVerdict, 600);
+    };
+
+    function printFinalVerdict() {
+        appendLog("---------------------------------------------------", "white");
+        appendLog("PROCESSING COMPATIBILITY MATRIX EVALUATION...", "green");
+        setTimeout(() => {
+            let passed = true;
+            if (window.userFirmware === "uefi") {
+                appendLog("[FAIL] Pure UEFI environment found. (UEFI WILL NOT WORK BUT ITS COMING SOON)", "red");
+                passed = false;
+            } else {
+                appendLog("[PASS] Legacy BIOS map routing confirmed.", "green");
+            }
+            if (window.userStorage === "nvme") {
+                appendLog("[WARN] NVMe architecture discovered. ALIFS filesystem lacks explicit PCIe sector indexing.", "red");
+                passed = false;
+            } else {
+                appendLog("[PASS] Primary IDE/SATA master target drive available.", "green");
+            }
+            appendLog("---------------------------------------------------", "white");
+            if (passed) {
+                appendLog(">> STATUS: FULLY ELIGIBLE FOR AERO1EOS BOOT", "green");
+            } else {
+                appendLog(">> STATUS: INCOMPATIBLE HARDWARE MATRIX", "red");
+            }
+        }, 1000);
     }
 </script>
-
 </body>
 </html>
