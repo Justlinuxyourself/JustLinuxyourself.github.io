@@ -109,8 +109,7 @@
 </div>
 
 <script>
-    let isX86 = true;
-
+    window.isSimulated = false;
     window.userFirmware = "";
     window.userStorage = "";
 
@@ -156,18 +155,18 @@
     }
 
     function checkCompatibility(simulatePC = false) {
+        window.isSimulated = simulatePC;
         const term = document.getElementById('term');
         term.style.display = 'block';
         document.getElementById('term-content').innerHTML = '';
 
         const userAgent = navigator.userAgent;
         const cores = navigator.hardwareConcurrency || "Unknown";
-        
-        isX86 = true;
+        let isX86 = true;
+
         if (/iPhone|iPad|iPod|Android|ARM|Macintosh/i.test(userAgent) && !/Intel/i.test(userAgent)) {
             isX86 = false;
         }
-
         if (simulatePC) isX86 = true;
 
         appendLog("[Aero1EOS Hardware Prober v1.8]", "white");
@@ -175,19 +174,17 @@
         
         setTimeout(() => {
             appendLog(`Probing CPU Cores: Found ${simulatePC ? 8 : cores} logical threads.`, "green");
-            appendLog(`User-Agent Frame: ${simulatePC ? "Mozilla/5.0 (Windows NT 10.0; Win64; x86_64)..." : userAgent.substring(0, 50) + "..."}`, "dim");
+            appendLog(`User-Agent Frame: ${userAgent.substring(0, 50) + "..."}`, "dim");
             appendLog("Verifying instruction set architecture...", "green");
         }, 500);
 
         setTimeout(() => {
             if (!isX86) {
                 appendLog("[CRITICAL FAIL] Target platform utilizes ARM/Mobile architecture.", "red");
-                appendLog("[CRITICAL FAIL] Aero1EOS requires bare-metal x86_64 instructions.", "red");
-                appendLog("---------------------------------------------------", "white");
                 appendLog(">> STATUS: INCOMPATIBLE HARDWARE", "red");
             } else {
                 appendLog("[SUCCESS] CPU Architecture matches x86_64 target framework.", "green");
-                appendLog("[SECURITY NOTICE] Browser sandbox restricts direct storage bus (IDE) or BIOS sector probing.", "white");
+                appendLog("[SECURITY NOTICE] Browser sandbox restricts direct bus probing.", "white");
                 askFirmware();
             }
         }, 1200);
@@ -196,8 +193,8 @@
     function askFirmware() {
         appendLog("\n[PROMPT] Select target system firmware configuration:", "white");
         appendActionButtons([
-            { label: "1. Legacy BIOS / CSM Mode", value: "bios" },
-            { label: "2. Pure UEFI (No Legacy Support)", value: "uefi" }
+            { label: "1. Legacy BIOS", value: "bios" },
+            { label: "2. Pure UEFI", value: "uefi" }
         ], "handleFirmwareSelection");
     }
 
@@ -208,15 +205,15 @@
     };
 
     function askStorage() {
-        appendLog("\n[PROMPT] Select physical target storage controller interface:", "white");
+        appendLog("\n[PROMPT] Select storage interface:", "white");
         appendActionButtons([
-            { label: "1. IDE / SATA Primary Interface", value: "sata" },
-            { label: "2. NVMe M.2 PCIe Solid State Storage", value: "nvme" }
+            { label: "1. IDE/SATA", value: "sata" },
+            { label: "2. NVMe", value: "nvme" }
         ], "handleStorageSelection");
     }
 
     window.handleStorageSelection = function(value) {
-        appendLog(`> Selected: ${value === 'sata' ? 'IDE/SATA Disk' : 'NVMe Controller'}`, "dim");
+        appendLog(`> Selected: ${value === 'sata' ? 'IDE/SATA' : 'NVMe'}`, "dim");
         window.userStorage = value;
         setTimeout(printFinalVerdict, 600);
     };
@@ -224,23 +221,30 @@
     function printFinalVerdict() {
         appendLog("---------------------------------------------------", "white");
         appendLog("PROCESSING COMPATIBILITY MATRIX EVALUATION...", "green");
+        
+        if (window.isSimulated) {
+            appendLog("[SECURITY ALERT] Hardware data was manually overridden by user.", "red");
+        }
+
         setTimeout(() => {
             let passed = true;
             if (window.userFirmware === "uefi") {
-                appendLog("[FAIL] Pure UEFI environment found. (UEFI WILL NOT WORK BUT ITS COMING SOON)", "red");
+                appendLog("[FAIL] Pure UEFI environment found. (UEFI NOT YET SUPPORTED)", "red");
                 passed = false;
             } else {
                 appendLog("[PASS] Legacy BIOS map routing confirmed.", "green");
             }
             if (window.userStorage === "nvme") {
-                appendLog("[WARN] NVMe architecture discovered. ALIFS filesystem lacks explicit PCIe sector indexing.", "red");
+                appendLog("[WARN] NVMe architecture discovered. ALIFS filesystem lacks PCIe indexing.", "red");
                 passed = false;
             } else {
                 appendLog("[PASS] Primary IDE/SATA master target drive available.", "green");
             }
             appendLog("---------------------------------------------------", "white");
-            if (passed) {
+            if (passed && !window.isSimulated) {
                 appendLog(">> STATUS: FULLY ELIGIBLE FOR AERO1EOS BOOT", "green");
+            } else if (passed && window.isSimulated) {
+                appendLog(">> STATUS: ELIGIBILITY UNKNOWN (SIMULATED)", "dim");
             } else {
                 appendLog(">> STATUS: INCOMPATIBLE HARDWARE MATRIX", "red");
             }
