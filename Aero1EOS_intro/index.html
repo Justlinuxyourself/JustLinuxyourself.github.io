@@ -37,7 +37,8 @@
   /* Liquid Glass Text Intro */
   .intro-text {
     position: absolute;
-    font-size: 8rem;
+    /* Used 'vw' so it scales based on screen width */
+    font-size: 15vw; 
     font-weight: 800;
     color: rgba(255, 255, 255, 0.1);
     backdrop-filter: blur(10px);
@@ -45,6 +46,8 @@
     animation: liquid 4s ease-in-out forwards;
     letter-spacing: -2px;
     pointer-events: none;
+    /* Ensure the text doesn't wrap awkwardly */
+    white-space: nowrap; 
   }
 
   @keyframes liquid {
