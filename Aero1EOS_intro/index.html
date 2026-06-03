@@ -1,1 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<style>
+  body {
+    margin: 0;
+    background: #000;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+    font-family: 'SF Pro Display', -apple-system, sans-serif;
+  }
 
+  /* Liquid Glass Text Intro */
+  .intro-text {
+    position: absolute;
+    font-size: 8rem;
+    font-weight: 800;
+    color: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    -webkit-text-stroke: 1px rgba(255, 255, 255, 0.3);
+    animation: liquid 4s ease-in-out forwards;
+    letter-spacing: -2px;
+  }
+
+  @keyframes liquid {
+    0% { opacity: 0; transform: scale(0.8); filter: blur(20px); }
+    50% { opacity: 1; transform: scale(1); filter: blur(0px); }
+    80% { opacity: 1; }
+    100% { opacity: 0; transform: scale(1.2); filter: blur(20px); }
+  }
+
+  /* Gallery Container */
+  .gallery {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+    animation: fadeInGallery 2s ease-in-out 3.5s forwards;
+  }
+
+  .slide {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+    transition: opacity 2s ease-in-out;
+  }
+
+  .slide img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .slide.active { opacity: 1; }
+
+  @keyframes fadeInGallery { to { opacity: 1; } }
+</style>
+</head>
+<body>
+
+  <div class="intro-text">Aero1EOS</div>
+
+  <div class="gallery">
+    <div class="slide active"><img src="IMG_3223.jpeg"></div>
+    <div class="slide"><img src="IMG_3224.jpeg"></div>
+    <div class="slide"><img src="IMG_3225.jpeg"></div>
+  </div>
+
+<script>
+  let slides = document.querySelectorAll('.slide');
+  let index = 0;
+
+  function cycle() {
+    slides[index].classList.remove('active');
+    index = (index + 1) % slides.length;
+    slides[index].classList.add('active');
+  }
+
+  setInterval(cycle, 5000);
+</script>
+
+</body>
+</html>
