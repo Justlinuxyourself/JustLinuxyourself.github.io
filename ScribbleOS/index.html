@@ -1,77 +1,27 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ScribbleOS | C-Based Microkernel</title>
-    <style>
-        :root {
-            --bg: #050608;
-            --accent: #00f2ff;
-            --text: #ffffff;
-            --dim: #8b949e;
-            --card: #0e1116;
-            --terminal-green: #00ff41;
-            --terminal-red: #ff3333;
-        }
-
-        * { box-sizing: border-box; transition: all 0.2s ease; scroll-behavior: smooth; }
-        body { background: var(--bg); color: var(--text); font-family: 'Inter', sans-serif; margin: 0; padding-bottom: 40px; }
-
-        nav { display: flex; justify-content: space-between; padding: 30px 10%; position: absolute; width: 100%; z-index: 10; }
-        .logo { font-family: monospace; font-weight: bold; color: var(--accent); }
-
-        header {
-            height: 90vh; display: flex; flex-direction: column; align-items: center; justify-content: center;
-            text-align: center; background: radial-gradient(circle at center, #0a192f 0%, #050608 100%);
-            padding: 0 20px;
-        }
-
-        h1 { font-size: clamp(2.5rem, 8vw, 4rem); margin: 0; font-weight: 800; }
-        h1 span { color: var(--accent); }
-
-        .btn-group { display: flex; gap: 15px; margin-top: 30px; flex-wrap: wrap; justify-content: center; }
-        .btn { padding: 12px 30px; font-weight: bold; cursor: pointer; border-radius: 4px; font-family: monospace; text-decoration: none; border: 1px solid var(--accent); display: inline-block; }
-        .btn-primary { background: var(--accent); color: #000; }
-        .btn-secondary { background: transparent; color: var(--accent); }
-        .btn-outline { border-color: var(--dim); color: var(--dim); }
-        .btn-outline:hover { border-color: var(--accent); color: var(--accent); }
-
-        .section-title { text-align: center; margin: 60px 0 30px; font-family: monospace; color: var(--accent); }
-        .table-container { padding: 0 10%; display: flex; justify-content: center; }
-        table { width: 100%; max-width: 800px; border-collapse: collapse; background: var(--card); border: 1px solid #222; }
-        th, td { padding: 15px; text-align: left; border-bottom: 1px solid #222; font-size: 0.9rem; }
-        th { color: var(--accent); font-family: monospace; }
-
-        #download { padding: 80px 10%; text-align: center; }
-        .iso-card { border: 2px dashed #333; padding: 40px; display: inline-block; border-radius: 20px; }
-
-        .contributors { padding: 60px 10%; text-align: center; color: var(--dim); font-size: 0.8rem; }
-
-        #term { position: fixed; inset: 0; background: #000; z-index: 100; display: none; padding: 40px 20px; font-family: monospace; overflow-y: auto; }
-        .log-green { color: var(--terminal-green); }
-        .log-red { color: var(--terminal-red); }
-        .log-white { color: #fff; }
-        .log-dim { color: var(--dim); }
-        
-        .close-term { position: absolute; top: 20px; right: 20px; background: transparent; border: 1px solid #333; color: var(--dim); padding: 5px 15px; cursor: pointer; font-family: monospace; z-index: 110; }
-        .close-term:hover { color: #fff; border-color: var(--accent); }
-
-        .term-btn-group { display: flex; gap: 15px; margin: 15px 0; flex-wrap: wrap; }
-        .term-btn { background: #111; border: 1px solid var(--terminal-green); color: var(--terminal-green); padding: 10px 20px; cursor: pointer; font-family: monospace; font-size: 0.9rem; border-radius: 4px; }
-        .term-btn:hover { background: var(--terminal-green); color: #000; }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ScribbleOS | C-Based Microkernel</title>
+<style>
+/* 
+  hopefully this combation of colurs doesnt look like shit frfr 
+  minified the css so skid copycats cant steal my layout and claim it, stay mad 💀
+*/
+:root{--bg:#030712;--accent:#ffd700;--blue-glow:#0055ff;--text:#f3f4f6;--dim:#9ca3af;--card:#0b1120;--terminal-green:#00ff41;--terminal-red:#ff3333;}*{box-sizing:border-box;transition:all 0.2s ease;scroll-behavior:smooth;}body{background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;margin:0;padding-bottom:40px;overflow-x:hidden;}nav{display:flex;justify-content:space-between;padding:20px 5%;position:absolute;width:100%;z-index:10;}.logo{font-family:monospace;font-weight:bold;color:var(--accent);}header{height:90vh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;background:radial-gradient(circle at center,#0f172a 0%,#030712 100%);padding:0 20px;border-bottom:1px solid rgba(255,215,0,0.1);}h1{font-size:clamp(2.2rem,7vw,4rem);margin:0;font-weight:800;}h1 span{color:var(--accent);text-shadow:0 0 20px rgba(255,215,0,0.3);}.btn-group{display:flex;gap:15px;margin-top:30px;flex-wrap:wrap;justify-content:center;}.btn{padding:12px 25px;font-weight:bold;cursor:pointer;border-radius:4px;font-family:monospace;text-decoration:none;border:1px solid var(--accent);display:inline-block;font-size:0.9rem;}.btn-primary{background:var(--accent);color:#000;box-shadow:0 0 15px rgba(255,215,0,0.2);}.btn-primary:hover{background:#ffea70;}.btn-secondary{background:transparent;color:var(--accent);}.btn-secondary:hover{background:rgba(255,215,0,0.1);}.btn-outline{border-color:var(--dim);color:var(--dim);}.btn-outline:hover{border-color:var(--accent);color:var(--accent);}.section-title{text-align:center;margin:60px 20px 30px;font-family:monospace;color:var(--accent);font-size:clamp(1.2rem,3vw,1.5rem);}.table-container{padding:0 5%;display:flex;justify-content:center;overflow-x:auto;}table{width:100%;max-width:800px;border-collapse:collapse;background:var(--card);border:1px solid rgba(255,215,0,0.15);}th,td{padding:12px 15px;text-align:left;border-bottom:1px solid #1e293b;font-size:0.85rem;}th{color:var(--accent);font-family:monospace;}#download{padding:60px 5% 30px;text-align:center;}.iso-card{border:2px dashed rgba(255,215,0,0.3);padding:30px 20px;display:inline-block;border-radius:20px;width:100%;max-width:500px;background:var(--card);}#donate{padding:20px 5% 60px;display:flex;flex-direction:column;align-items:center;width:100%;}.crypto-grid{display:flex;flex-wrap:wrap;justify-content:center;gap:15px;width:100%;max-width:960px;}.crypto-card{background:var(--card);border:1px solid rgba(255,215,0,0.15);border-radius:8px;padding:15px;display:flex;flex-direction:column;gap:8px;width:100%;max-width:300px;flex:1 1 280px;}.crypto-card:hover{border-color:var(--accent);}.crypto-header{display:flex;justify-content:space-between;align-items:center;font-family:monospace;}.crypto-identity{display:flex;align-items:center;gap:8px;}.crypto-logo{width:22px;height:22px;object-fit:contain;flex-shrink:0;transition:opacity 0.2s ease;}.crypto-logo.invert-light{filter:brightness(0) invert(1);}.crypto-logo:hover{opacity:0.8;}.crypto-name{color:var(--accent);font-weight:bold;font-size:0.95rem;}.crypto-tag{font-size:0.7rem;color:var(--dim);background:#1e293b;padding:2px 6px;border-radius:4px;}.crypto-addr-row{display:flex;align-items:center;justify-content:space-between;gap:8px;background:#030712;padding:8px 10px;border-radius:4px;border:1px solid #1e293b;width:100%;overflow:hidden;}.crypto-addr{font-family:monospace;font-size:0.75rem;color:var(--dim);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}.copy-btn{background:transparent;border:1px solid var(--accent);color:var(--accent);font-family:monospace;font-size:0.75rem;padding:4px 8px;border-radius:4px;cursor:pointer;flex-shrink:0;}.copy-btn:hover{background:var(--accent);color:#000;}.copy-btn.copied{border-color:var(--terminal-green);color:var(--terminal-green);background:transparent;}.contributors{padding:40px 5%;text-align:center;color:var(--dim);font-size:0.8rem;}#term{position:fixed;inset:0;background:#000;z-index:100;display:none;padding:30px 15px;font-family:monospace;overflow-y:auto;}.log-green{color:var(--terminal-green);}.log-red{color:var(--terminal-red);}.log-white{color:#fff;}.log-dim{color:var(--dim);}.close-term{position:absolute;top:20px;right:20px;background:transparent;border:1px solid #333;color:var(--dim);padding:5px 15px;cursor:pointer;font-family:monospace;z-index:110;}.close-term:hover{color:#fff;border-color:var(--accent);}.term-btn-group{display:flex;gap:10px;margin:15px 0;flex-wrap:wrap;}.term-btn{background:#111;border:1px solid var(--terminal-green);color:var(--terminal-green);padding:8px 15px;cursor:pointer;font-family:monospace;font-size:0.85rem;border-radius:4px;}.term-btn:hover{background:var(--terminal-green);color:#000;}
+</style>
 </head>
 <body>
 
 <nav>
     <div class="logo">ScribbleOS_C</div>
-    <div style="font-family: monospace;">[ ARCH: x86_64 ]</div>
+    <div style="font-family: monospace; font-size: 0.8rem; color: var(--dim);">[ ARCH: x86_64 ]</div>
 </nav>
 
 <header>
     <h1>Pure C. <span>Zero Bloat.</span></h1>
-    <p style="color: var(--dim); max-width: 500px; margin: 20px 0;">A hobbyist-grade operating system written in ANSI C and Assembly. No standard library, just raw hardware control.</p>
+    <p style="color: var(--dim); max-width: 500px; margin: 20px 0; font-size: 0.95rem;">A hobbyist-grade operating system written in ANSI C and Assembly. No standard library, just raw hardware control.</p>
     <div class="btn-group">
         <button class="btn btn-primary" onclick="checkCompatibility(false)">Check My Device</button>
         <button class="btn btn-outline" onclick="checkCompatibility(true)">Simulate PC Check</button>
@@ -90,11 +40,93 @@
     </table>
 </div>
 
+<!-- remeber to actually update this link when i push v11 lol -->
 <section id="download">
     <div class="iso-card">
-        <h2 style="margin-top:0">v10.26-ALPHA-RELEASE</h2>
-        <p style="color: var(--dim);">scribbleos4.iso</p>
+        <h2 style="margin-top:0; font-size: 1.3rem; color: var(--accent);">v10.26-ALPHA-RELEASE</h2>
+        <p style="color: var(--dim); font-size: 0.85rem;">scribbleos4.iso</p>
         <a href="https://github.com/justlinuxyourself/ScribbleOS/releases/download/latest/scribbleos4.iso" class="btn btn-primary" download>DOWNLOAD .ISO</a>
+    </div>
+</section>
+
+<!-- so i can afford a fucking laptop and sum devices so i can port my os to the devices -->
+<section id="donate">
+    <h2 class="section-title" style="margin-top: 20px;">// SUPPORT_DEV (CRYPTO)</h2>
+    <p style="color: var(--dim); font-size: 0.85rem; margin-top: -15px; margin-bottom: 30px; text-align: center;">Fuel late-night kernel debugging. Click to copy wallet address.</p>
+    
+    <div class="crypto-grid">
+        
+        <div class="crypto-card">
+            <div class="crypto-header">
+                <div class="crypto-identity">
+                    <img class="crypto-logo" src="https://cryptologos.cc/logos/bitcoin-btc-logo.svg?v=035" alt="Bitcoin">
+                    <span class="crypto-name">Bitcoin</span>
+                </div>
+                <span class="crypto-tag">Native SegWit</span>
+            </div>
+            <div class="crypto-addr-row">
+                <span class="crypto-addr" title="bc1q6cq6a820d403rq2k0j9dpq4yqel25xrj6qxzpv">bc1q6cq6a820d403rq2k0j9dpq4yqel25xrj6qxzpv</span>
+                <button class="copy-btn" onclick="navigator.clipboard.writeText('bc1q6cq6a820d403rq2k0j9dpq4yqel25xrj6qxzpv').then(() => {const o = this.textContent; this.textContent = 'COPIED!'; this.classList.add('copied'); setTimeout(() => { this.textContent = o; this.classList.remove('copied'); }, 2000);})">COPY</button>
+            </div>
+        </div>
+
+        <div class="crypto-card">
+            <div class="crypto-header">
+                <div class="crypto-identity">
+                    <img class="crypto-logo" src="https://cryptologos.cc/logos/ethereum-eth-logo.svg?v=035" alt="Ethereum">
+                    <span class="crypto-name">Ethereum / EVM</span>
+                </div>
+                <span class="crypto-tag">ERC-20 + L2s</span>
+            </div>
+            <div class="crypto-addr-row">
+                <span class="crypto-addr" title="0x23aa05e41294aD0Dbd49006B2ff29CF75d56C770">0x23aa05e41294aD0Dbd49006B2ff29CF75d56C770</span>
+                <button class="copy-btn" onclick="navigator.clipboard.writeText('0x23aa05e41294aD0Dbd49006B2ff29CF75d56C770').then(() => {const o = this.textContent; this.textContent = 'COPIED!'; this.classList.add('copied'); setTimeout(() => { this.textContent = o; this.classList.remove('copied'); }, 2000);})">COPY</button>
+            </div>
+            <p style="font-size: 0.7rem; color: var(--dim); margin: 4px 0 0 2px; line-height: 1.3;">* Works on Ethereum, Linea, Arbitrum, Arc, BNB Chain, Base, Monad, Optimism, and Polygon.</p>
+        </div>
+
+        <div class="crypto-card">
+            <div class="crypto-header">
+                <div class="crypto-identity">
+                    <img class="crypto-logo" src="https://cryptologos.cc/logos/solana-sol-logo.svg?v=035" alt="Solana">
+                    <span class="crypto-name">Solana</span>
+                </div>
+                <span class="crypto-tag">SPL</span>
+            </div>
+            <div class="crypto-addr-row">
+                <span class="crypto-addr" title="DVAEZw8BRLAuyPGNRo3XQCux4zskGo6H5MMmw6LG9rGb">DVAEZw8BRLAuyPGNRo3XQCux4zskGo6H5MMmw6LG9rGb</span>
+                <button class="copy-btn" onclick="navigator.clipboard.writeText('DVAEZw8BRLAuyPGNRo3XQCux4zskGo6H5MMmw6LG9rGb').then(() => {const o = this.textContent; this.textContent = 'COPIED!'; this.classList.add('copied'); setTimeout(() => { this.textContent = o; this.classList.remove('copied'); }, 2000);})">COPY</button>
+            </div>
+        </div>
+
+        <div class="crypto-card">
+            <div class="crypto-header">
+                <div class="crypto-identity">
+                    <img class="crypto-logo" src="https://cryptologos.cc/logos/tron-trx-logo.svg?v=035" alt="Tron">
+                    <span class="crypto-name">Tron</span>
+                </div>
+                <span class="crypto-tag">TRC-20</span>
+            </div>
+            <div class="crypto-addr-row">
+                <span class="crypto-addr" title="TVTktvr3xVUBEyH3mQRTvsy4JWG22CzBqC">TVTktvr3xVUBEyH3mQRTvsy4JWG22CzBqC</span>
+                <button class="copy-btn" onclick="navigator.clipboard.writeText('TVTktvr3xVUBEyH3mQRTvsy4JWG22CzBqC').then(() => {const o = this.textContent; this.textContent = 'COPIED!'; this.classList.add('copied'); setTimeout(() => { this.textContent = o; this.classList.remove('copied'); }, 2000);})">COPY</button>
+            </div>
+        </div>
+
+        <div class="crypto-card">
+            <div class="crypto-header">
+                <div class="crypto-identity">
+                    <img class="crypto-logo invert-light" src="https://cryptologos.cc/logos/stellar-xlm-logo.svg?v=035" alt="Stellar">
+                    <span class="crypto-name">Stellar</span>
+                </div>
+                <span class="crypto-tag">XLM</span>
+            </div>
+            <div class="crypto-addr-row">
+                <span class="crypto-addr" title="GB7XOWGLJFWZWJ6PHGM6BJJDTPHWNSU3LW47GVPIE7MR7QY6DKGS6BDN">GB7XOWGLJFWZWJ6PHGM6BJJDTPHWNSU3LW47GVPIE7MR7QY6DKGS6BDN</span>
+                <button class="copy-btn" onclick="navigator.clipboard.writeText('GB7XOWGLJFWZWJ6PHGM6BJJDTPHWNSU3LW47GVPIE7MR7QY6DKGS6BDN').then(() => {const o = this.textContent; this.textContent = 'COPIED!'; this.classList.add('copied'); setTimeout(() => { this.textContent = o; this.classList.remove('copied'); }, 2000);})">COPY</button>
+            </div>
+        </div>
+
     </div>
 </section>
 
@@ -103,152 +135,184 @@
     <p>Special thanks to: u, ily guys thx for support</p>
 </div>
 
+<!-- fake terminal overlay bc browsers wont let me touch actual hardware -->
 <div id="term">
-    <button class="close-term" onclick="closeTerminal()">[ X ] Close</button>
+    <button class="close-term" onclick="document.getElementById('term').style.display = 'none'; document.getElementById('term-content').innerHTML = '';">[ X ] Close</button>
     <div id="term-content"></div>
 </div>
 
 <script>
-    window.isSimulated = false;
-    window.userFirmware = "";
-    window.userStorage = "";
-
-    function closeTerminal() {
-        document.getElementById('term').style.display = 'none';
-        document.getElementById('term-content').innerHTML = '';
-    }
-
-    function appendLog(text, type = "white") {
-        const content = document.getElementById('term-content');
-        const term = document.getElementById('term');
-        const div = document.createElement('div');
-        div.textContent = text;
-        
-        if (type === "green") div.className = "log-green";
-        else if (type === "red") div.className = "log-red";
-        else if (type === "dim") div.className = "log-dim";
-        else div.className = "log-white";
-        
-        content.appendChild(div);
-        term.scrollTop = term.scrollHeight;
-    }
-
-    function appendActionButtons(options, callbackName) {
-        const content = document.getElementById('term-content');
-        const term = document.getElementById('term');
-        const container = document.createElement('div');
-        container.className = 'term-btn-group';
-
-        options.forEach(opt => {
-            const btn = document.createElement('button');
-            btn.className = 'term-btn';
-            btn.textContent = opt.label;
-            btn.onclick = function() {
-                container.remove();
-                window[callbackName](opt.value);
-            };
-            container.appendChild(btn);
-        });
-
-        content.appendChild(container);
-        term.scrollTop = term.scrollHeight;
-    }
-
+    // too lazy to make it funcs frfr so everything is just slammed together inline lol
     function checkCompatibility(simulatePC = false) {
         window.isSimulated = simulatePC;
         const term = document.getElementById('term');
         term.style.display = 'block';
-        document.getElementById('term-content').innerHTML = '';
+        const content = document.getElementById('term-content');
+        content.innerHTML = '';
 
-        const userAgent = navigator.userAgent;
-        const cores = navigator.hardwareConcurrency || "Unknown";
+        const ua = navigator.userAgent;
+        const cores = navigator.hardwareConcurrency || 4;
         let isX86 = true;
 
-        if (/iPhone|iPad|iPod|Android|ARM|Macintosh/i.test(userAgent) && !/Intel/i.test(userAgent)) {
-            isX86 = false;
-        }
-        if (simulatePC) isX86 = true;
+        if (/iPhone|iPad|iPod|Android|ARM|Macintosh/i.test(ua)) { if(!/Intel/i.test(ua)) { isX86 = false; } }
+        if (simulatePC) { isX86 = true; }
 
-        appendLog("[ScribbleOS Hardware Prober v1.8]", "white");
-        appendLog("Initializing client-side diagnostics...", "green");
-        
-        setTimeout(() => {
-            appendLog(`Probing CPU Cores: Found ${simulatePC ? 8 : cores} logical threads.`, "green");
-            appendLog(`User-Agent Frame: ${userAgent.substring(0, 50) + "..."}`, "dim");
-            appendLog("Verifying instruction set architecture...", "green");
+        const d1 = document.createElement('div'); d1.textContent = "[ScribbleOS Hardware Prober v1.8]"; d1.className = "log-white"; content.appendChild(d1);
+        const d2 = document.createElement('div'); d2.textContent = "Initializing client-side diagnostics..."; d2.className = "log-green"; content.appendChild(d2);
+
+        setTimeout(function() {
+            const d3 = document.createElement('div'); d3.textContent = "Probing CPU Cores: Found " + (simulatePC ? 8 : cores) + " logical threads."; d3.className = "log-green"; content.appendChild(d3);
+            const d4 = document.createElement('div'); d4.textContent = "User-Agent Frame: " + ua.substring(0, 50) + "..."; d4.className = "log-dim"; content.appendChild(d4);
+            const d5 = document.createElement('div'); d5.textContent = "Verifying instruction set architecture..."; d5.className = "log-green"; content.appendChild(d5);
+            term.scrollTop = term.scrollHeight;
         }, 500);
 
-        setTimeout(() => {
+        setTimeout(function() {
             if (!isX86) {
-                appendLog("[CRITICAL FAIL] Target platform utilizes ARM/Mobile architecture.", "red");
-                appendLog(">> STATUS: INCOMPATIBLE HARDWARE", "red");
+                const err1 = document.createElement('div'); err1.textContent = "[CRITICAL FAIL] Target platform utilizes ARM/Mobile architecture."; err1.className = "log-red"; content.appendChild(err1);
+                const err2 = document.createElement('div'); err2.textContent = ">> STATUS: INCOMPATIBLE HARDWARE"; err2.className = "log-red"; content.appendChild(err2);
             } else {
-                appendLog("[SUCCESS] CPU Architecture matches x86_64 target framework.", "green");
-                appendLog("[SECURITY NOTICE] Browser sandbox restricts direct bus probing.", "white");
-                askFirmware();
+                const s1 = document.createElement('div'); s1.textContent = "[SUCCESS] CPU Architecture matches x86_64 target framework."; s1.className = "log-green"; content.appendChild(s1);
+                const s2 = document.createElement('div'); s2.textContent = "[SECURITY NOTICE] Browser sandbox restricts direct bus probing."; s2.className = "log-white"; content.appendChild(s2);
+                
+                const p1 = document.createElement('div'); p1.textContent = "\n[PROMPT] Select target system firmware configuration:"; p1.className = "log-white"; content.appendChild(p1);
+                
+                const group1 = document.createElement('div'); group1.className = 'term-btn-group';
+                const b1 = document.createElement('button'); b1.className = 'term-btn'; b1.textContent = "1. Legacy BIOS";
+                const b2 = document.createElement('button'); b2.className = 'term-btn'; b2.textContent = "2. Pure UEFI";
+                
+                b1.onclick = function() {
+                    group1.remove();
+                    window.userFirmware = "bios";
+                    const sel1 = document.createElement('div'); sel1.textContent = "> Selected: Legacy BIOS"; sel1.className = "log-dim"; content.appendChild(sel1);
+                    
+                    setTimeout(function() {
+                        const p2 = document.createElement('div'); p2.textContent = "\n[PROMPT] Select storage interface:"; p2.className = "log-white"; content.appendChild(p2);
+                        const group2 = document.createElement('div'); group2.className = 'term-btn-group';
+                        const s_btn1 = document.createElement('button'); s_btn1.className = 'term-btn'; s_btn1.textContent = "1. IDE/SATA";
+                        const s_btn2 = document.createElement('button'); s_btn2.className = 'term-btn'; s_btn2.textContent = "2. NVMe";
+                        
+                        s_btn1.onclick = function() {
+                            group2.remove();
+                            window.userStorage = "sata";
+                            const sel2 = document.createElement('div'); sel2.textContent = "> Selected: IDE/SATA"; sel2.className = "log-dim"; content.appendChild(sel2);
+                            
+                            setTimeout(function() {
+                                const v1 = document.createElement('div'); v1.textContent = "---------------------------------------------------"; v1.className = "log-white"; content.appendChild(v1);
+                                const v2 = document.createElement('div'); v2.textContent = "PROCESSING COMPATIBILITY MATRIX EVALUATION..."; v2.className = "log-green"; content.appendChild(v2);
+                                if (window.isSimulated) {
+                                    const alert = document.createElement('div'); alert.textContent = "[SECURITY ALERT] Hardware data was manually overridden by user."; alert.className = "log-red"; content.appendChild(alert);
+                                }
+                                setTimeout(function() {
+                                    const pass1 = document.createElement('div'); pass1.textContent = "[PASS] Legacy BIOS map routing certified."; pass1.className = "log-green"; content.appendChild(pass1);
+                                    const pass2 = document.createElement('div'); pass2.textContent = "[PASS] Primary IDE/SATA master target drive available."; pass2.className = "log-green"; content.appendChild(pass2);
+                                    const v3 = document.createElement('div'); v3.textContent = "---------------------------------------------------"; v3.className = "log-white"; content.appendChild(v3);
+                                    const finalStatus = document.createElement('div');
+                                    if (window.isSimulated) {
+                                        finalStatus.textContent = ">> STATUS: ELIGIBILITY UNKNOWN (SIMULATED)"; finalStatus.className = "log-dim";
+                                    } else {
+                                        finalStatus.textContent = ">> STATUS: FULLY ELIGIBLE FOR SCRIBBLEOS BOOT"; finalStatus.className = "log-green";
+                                    }
+                                    content.appendChild(finalStatus);
+                                    term.scrollTop = term.scrollHeight;
+                                }, 1000);
+                            }, 600);
+                        };
+                        
+                        s_btn2.onclick = function() {
+                            group2.remove();
+                            window.userStorage = "nvme";
+                            const sel2 = document.createElement('div'); sel2.textContent = "> Selected: NVMe"; sel2.className = "log-dim"; content.appendChild(sel2);
+                            
+                            setTimeout(function() {
+                                const v1 = document.createElement('div'); v1.textContent = "---------------------------------------------------"; v1.className = "log-white"; content.appendChild(v1);
+                                const v2 = document.createElement('div'); v2.textContent = "PROCESSING COMPATIBILITY MATRIX EVALUATION..."; v2.className = "log-green"; content.appendChild(v2);
+                                if (window.isSimulated) {
+                                    const alert = document.createElement('div'); alert.textContent = "[SECURITY ALERT] Hardware data was manually overridden by user."; alert.className = "log-red"; content.appendChild(alert);
+                                }
+                                setTimeout(function() {
+                                    const pass1 = document.createElement('div'); pass1.textContent = "[PASS] Legacy BIOS map routing certified."; pass1.className = "log-green"; content.appendChild(pass1);
+                                    const fail1 = document.createElement('div'); fail1.textContent = "[WARN] NVMe architecture discovered. ALIFS filesystem lacks PCIe indexing."; fail1.className = "log-red"; content.appendChild(fail1);
+                                    const v3 = document.createElement('div'); v3.textContent = "---------------------------------------------------"; v3.className = "log-white"; content.appendChild(v3);
+                                    const finalStatus = document.createElement('div'); finalStatus.textContent = ">> STATUS: INCOMPATIBLE HARDWARE MATRIX"; finalStatus.className = "log-red"; content.appendChild(finalStatus);
+                                    term.scrollTop = term.scrollHeight;
+                                }, 1000);
+                            }, 600);
+                        };
+                        
+                        group2.appendChild(s_btn1);
+                        group2.appendChild(s_btn2);
+                        content.appendChild(group2);
+                        term.scrollTop = term.scrollHeight;
+                    }, 400);
+                };
+                
+                b2.onclick = function() {
+                    group1.remove();
+                    window.userFirmware = "uefi";
+                    const sel1 = document.createElement('div'); sel1.textContent = "> Selected: Pure UEFI"; sel1.className = "log-dim"; content.appendChild(sel1);
+                    
+                    setTimeout(function() {
+                        const p2 = document.createElement('div'); p2.textContent = "\n[PROMPT] Select storage interface:"; p2.className = "log-white"; content.appendChild(p2);
+                        const group2 = document.createElement('div'); group2.className = 'term-btn-group';
+                        const s_btn1 = document.createElement('button'); s_btn1.className = 'term-btn'; s_btn1.textContent = "1. IDE/SATA";
+                        const s_btn2 = document.createElement('button'); s_btn2.className = 'term-btn'; s_btn2.textContent = "2. NVMe";
+                        
+                        s_btn1.onclick = function() {
+                            group2.remove();
+                            window.userStorage = "sata";
+                            const sel2 = document.createElement('div'); sel2.textContent = "> Selected: IDE/SATA"; sel2.className = "log-dim"; content.appendChild(sel2);
+                            
+                            setTimeout(function() {
+                                const v1 = document.createElement('div'); v1.textContent = "---------------------------------------------------"; v1.className = "log-white"; content.appendChild(v1);
+                                const v2 = document.createElement('div'); v2.textContent = "PROCESSING COMPATIBILITY MATRIX EVALUATION..."; v2.className = "log-green"; content.appendChild(v2);
+                                if (window.isSimulated) {
+                                    const alert = document.createElement('div'); alert.textContent = "[SECURITY ALERT] Hardware data was manually overridden by user."; alert.className = "log-red"; content.appendChild(alert);
+                                }
+                                setTimeout(function() {
+                                    const fail1 = document.createElement('div'); fail1.textContent = "[FAIL] Pure UEFI environment found. (UEFI NOT YET SUPPORTED)"; fail1.className = "log-red"; content.appendChild(fail1);
+                                    const pass2 = document.createElement('div'); pass2.textContent = "[PASS] Primary IDE/SATA master target drive available."; pass2.className = "log-green"; content.appendChild(pass2);
+                                    const v3 = document.createElement('div'); v3.textContent = "---------------------------------------------------"; v3.className = "log-white"; content.appendChild(v3);
+                                    const finalStatus = document.createElement('div'); finalStatus.textContent = ">> STATUS: INCOMPATIBLE HARDWARE MATRIX"; finalStatus.className = "log-red"; content.appendChild(finalStatus);
+                                    term.scrollTop = term.scrollHeight;
+                                }, 1000);
+                            }, 600);
+                        };
+                        
+                        s_btn2.onclick = function() {
+                            group2.remove();
+                            window.userStorage = "nvme";
+                            const sel2 = document.createElement('div'); sel2.textContent = "> Selected: NVMe"; sel2.className = "log-dim"; content.appendChild(sel2);
+                            
+                            setTimeout(function() {
+                                const v1 = document.createElement('div'); v1.textContent = "---------------------------------------------------"; v1.className = "log-white"; content.appendChild(v1);
+                                const v2 = document.createElement('div'); v2.textContent = "PROCESSING COMPATIBILITY MATRIX EVALUATION..."; v2.className = "log-green"; content.appendChild(v2);
+                                if (window.isSimulated) {
+                                    const alert = document.createElement('div'); alert.textContent = "[SECURITY ALERT] Hardware data was manually overridden by user."; alert.className = "log-red"; content.appendChild(alert);
+                                }
+                                setTimeout(function() {
+                                    const fail1 = document.createElement('div'); fail1.textContent = "[FAIL] Pure UEFI environment found. (UEFI NOT YET SUPPORTED)"; fail1.className = "log-red"; content.appendChild(fail1);
+                                    const fail2 = document.createElement('div'); fail2.textContent = "[WARN] NVMe architecture discovered. ALIFS filesystem lacks PCIe indexing."; fail2.className = "log-red"; content.appendChild(fail2);
+                                    const v3 = document.createElement('div'); v3.textContent = "---------------------------------------------------"; v3.className = "log-white"; content.appendChild(v3);
+                                    const finalStatus = document.createElement('div'); finalStatus.textContent = ">> STATUS: INCOMPATIBLE HARDWARE MATRIX"; finalStatus.className = "log-red"; content.appendChild(finalStatus);
+                                    term.scrollTop = term.scrollHeight;
+                                }, 1000);
+                            }, 600);
+                        };
+                        
+                        group2.appendChild(s_btn1);
+                        group2.appendChild(s_btn2);
+                        content.appendChild(group2);
+                        term.scrollTop = term.scrollHeight;
+                    }, 400);
+                };
+                
+                group1.appendChild(b1);
+                group1.appendChild(b2);
+                content.appendChild(group1);
             }
+            term.scrollTop = term.scrollHeight;
         }, 1200);
-    }
-
-    function askFirmware() {
-        appendLog("\n[PROMPT] Select target system firmware configuration:", "white");
-        appendActionButtons([
-            { label: "1. Legacy BIOS", value: "bios" },
-            { label: "2. Pure UEFI", value: "uefi" }
-        ], "handleFirmwareSelection");
-    }
-
-    window.handleFirmwareSelection = function(value) {
-        appendLog(`> Selected: ${value === 'bios' ? 'Legacy BIOS' : 'Pure UEFI'}`, "dim");
-        window.userFirmware = value;
-        setTimeout(askStorage, 400);
-    };
-
-    function askStorage() {
-        appendLog("\n[PROMPT] Select storage interface:", "white");
-        appendActionButtons([
-            { label: "1. IDE/SATA", value: "sata" },
-            { label: "2. NVMe", value: "nvme" }
-        ], "handleStorageSelection");
-    }
-
-    window.handleStorageSelection = function(value) {
-        appendLog(`> Selected: ${value === 'sata' ? 'IDE/SATA' : 'NVMe'}`, "dim");
-        window.userStorage = value;
-        setTimeout(printFinalVerdict, 600);
-    };
-
-    function printFinalVerdict() {
-        appendLog("---------------------------------------------------", "white");
-        appendLog("PROCESSING COMPATIBILITY MATRIX EVALUATION...", "green");
-        
-        if (window.isSimulated) {
-            appendLog("[SECURITY ALERT] Hardware data was manually overridden by user.", "red");
-        }
-
-        setTimeout(() => {
-            let passed = true;
-            if (window.userFirmware === "uefi") {
-                appendLog("[FAIL] Pure UEFI environment found. (UEFI NOT YET SUPPORTED)", "red");
-                passed = false;
-            } else {
-                appendLog("[PASS] Legacy BIOS map routing confirmed.", "green");
-            }
-            if (window.userStorage === "nvme") {
-                appendLog("[WARN] NVMe architecture discovered. ALIFS filesystem lacks PCIe indexing.", "red");
-                passed = false;
-            } else {
-                appendLog("[PASS] Primary IDE/SATA master target drive available.", "green");
-            }
-            appendLog("---------------------------------------------------", "white");
-            if (passed && !window.isSimulated) {
-                appendLog(">> STATUS: FULLY ELIGIBLE FOR AERO1EOS BOOT", "green");
-            } else if (passed && window.isSimulated) {
-                appendLog(">> STATUS: ELIGIBILITY UNKNOWN (SIMULATED)", "dim");
-            } else {
-                appendLog(">> STATUS: INCOMPATIBLE HARDWARE MATRIX", "red");
-            }
-        }, 1000);
     }
 </script>
 </body>
